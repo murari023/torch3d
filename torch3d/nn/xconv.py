@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 from collections import OrderedDict
-import torch3d.ops as ops
+from torch3d.ops import furthest_point_sample, knn
 
 
 __all__ = ['XConv']
@@ -49,19 +49,24 @@ class XConv(nn.Module):
         self.bn = nn.BatchNorm2d(self.out_channels)
         self.activation = nn.SELU()
 
-    def forward(self, p, x=None):
+    def forward(self, p, x=None, q=None):
         batch_size = p.shape[0]
         p = p.permute(0, 2, 1).contiguous()
 
-        # random downsample
-        choice = torch.randperm(p.shape[1])[:self.num_points]
-        q = p[:, choice, :]
+        if q is None:
+            # random downsample
+            if self.sampling == 'random':
+                choice = torch.randperm(p.shape[1])[:self.num_points]
+                q = p[:, choice, :]
+            elif self.sampling == 'furthest':
+                choice = furthest_point_sample(p, self.num_points)
+                q = self._region_select(p, choice)
 
         # find k-nearest neighbors
-        _, indices = ops.knn(q, p, self.kernel_size * self.dilation)
+        _, indices = knn(q, p, self.kernel_size * self.dilation)
         indices = indices[..., ::self.dilation]
 
-        p = _region_select(p, indices)
+        p = self._region_select(p, indices)
         p_hat = p - q.unsqueeze(2)  # move p to local coordinates of q
         p_hat = p_hat.permute(0, 3, 1, 2)
         x_hat = self.mlp1(p_hat)  # lifted features
@@ -69,7 +74,7 @@ class XConv(nn.Module):
 
         if x is not None:
             x = x.permute(0, 2, 1).contiguous()
-            x = _region_select(x, indices)
+            x = self._region_select(x, indices)
             x_hat = torch.cat([x_hat, x], dim=-1)
 
         # X-transform
@@ -86,8 +91,7 @@ class XConv(nn.Module):
         q = q.permute(0, 2, 1).contiguous()
         return q, x
 
-
-def _region_select(x, indices):
-    x = [x[b, i, :] for b, i in enumerate(torch.unbind(indices, dim=0))]
-    x = torch.stack(x, dim=0)
-    return x
+    def _region_select(self, x, indices):
+        x = [x[b, i, :] for b, i in enumerate(torch.unbind(indices, dim=0))]
+        x = torch.stack(x, dim=0)
+        return x

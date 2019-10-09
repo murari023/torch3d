@@ -1,6 +1,2 @@
 from .knn import knn
-
-
-__all__ = [
-    'knn'
-]
+from .sampling import *

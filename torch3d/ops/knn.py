@@ -1,5 +1,7 @@
 import torch
 
+__all__ = ['knn']
+
 
 def knn(p, q, k, radius=True):
     xx = p.pow(2).sum(dim=2, keepdim=True)
