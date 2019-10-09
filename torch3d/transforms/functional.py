@@ -15,11 +15,11 @@ def to_tensor(pcd):
     Convert a ``numpy.ndarray`` to `Tensor`.
     """
 
-    if not _is_numpy(pcd):
+    if not _is_numpy(pcd) or pcd.ndim == 1:
         return pcd
     if pcd.ndim == 2:
         tensor = torch.tensor(pcd.transpose(1, 0))
-    return tensor
+        return tensor
 
 
 def to_point_cloud(tensor):

@@ -30,14 +30,13 @@ From source:
 ```bash
 git clone https://github.com/pqhieu/torch3d
 cd torch3d
-pip install -- .
+python setup.py install
 ```
 
 Roadmap
 -------
 
-**v1.0**
-- [ ] Implement PointNet++
-- [ ] More transformations: jitter, rotation
+**v0.1**
+- [ ] PointCNN models
 - [ ] Publish on PyPi
 - [ ] Improve documentation

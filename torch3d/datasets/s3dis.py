@@ -37,16 +37,16 @@ class S3DIS(Dataset):
             assert 'data' in h5 and 'label' in h5
             self.samples.append(np.array(h5['data'][:]))
             self.targets.append(np.array(h5['label'][:]))
-        self.samples = np.concatenate(self.targets, axis=0)
+        self.samples = np.concatenate(self.samples, axis=0)
         self.targets = np.concatenate(self.targets, axis=0)
         self.targets = np.squeeze(self.targets).astype(np.int64)
 
-        # Filter point cloud not in area of interest
+        # filter point cloud not in area of interest
         area = 'Area_' + str(self.test_area)
         indices = [i for i, room in enumerate(rooms) if area in room]
         if self.train:
             indices = list(set(range(len(rooms))) - set(indices))
-        self.samples = self.samples[indices]
+        self.samples = self.samples[indices][..., :3]
         self.targets = self.targets[indices]
 
     def __getitem__(self, index):

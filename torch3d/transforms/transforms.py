@@ -54,8 +54,7 @@ class Downsample(object):
         self.num_samples = num_samples
 
     def __call__(self, sample, target):
-        n = len(sample)
-        indices = np.random.choice(n, self.num_samples, replace=False)
+        indices = np.random.choice(len(sample), self.num_samples, replace=False)
         sample = F.select(sample, indices)
         target = F.select(target, indices)
         return sample, target
