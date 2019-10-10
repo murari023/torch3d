@@ -37,7 +37,7 @@ class PointNet(nn.Module):
             nn.ReLU(),
             nn.Dropout(0.2),
         )
-        self.pred = nn.Linear(256, num_classes)
+        self.fc = nn.Linear(256, num_classes)
         if init_weights:
             self._initialize_weights()
 
@@ -46,7 +46,7 @@ class PointNet(nn.Module):
         x = self.mlp2(x)
         x = self.maxpool(x).squeeze(2)
         x = self.mlp3(x)
-        x = self.pred(x)
+        x = self.fc(x)
         return x
 
     def _initialize_weights(self):

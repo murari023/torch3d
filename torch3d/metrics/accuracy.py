@@ -11,8 +11,8 @@ class Accuracy(Metric):
         self.reset()
 
     def reset(self):
-        self.total = torch.zeros(self.num_classes)
         self.count = torch.zeros(self.num_classes)
+        self.total = torch.zeros(self.num_classes)
 
     def update(self, output, target):
         if self.transform is not None:

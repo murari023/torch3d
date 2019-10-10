@@ -37,7 +37,7 @@ class PointNet(nn.Module):
             nn.BatchNorm1d(128),
             nn.ReLU(),
         )
-        self.pred = nn.Conv1d(128, num_classes, 1)
+        self.fc = nn.Conv1d(128, num_classes, 1)
         if init_weights:
             self._initialize_weights()
 
@@ -45,11 +45,10 @@ class PointNet(nn.Module):
         num_points = x.shape[2]
         f = self.mlp1(x)
         x = self.mlp2(f)
-        x = self.maxpool(x).squeeze(2)
-        x = x.view(-1, num_points, 1).repeat(1, 1, num_points)
+        x = self.maxpool(x).repeat(1, 1, num_points)
         x = torch.cat([f, x], dim=1)
         x = self.mlp3(x)
-        x = self.pred(x)
+        x = self.fc(x)
         return x
 
     def _initialize_weights(self):

@@ -39,6 +39,21 @@ class S3DIS(Dataset):
         ('ply_data_all_22.h5', 'a01ae14ceff1165ad49e1973570c08c5'),
         ('ply_data_all_23.h5', '67e8c5a7179babe18f110ebea1d3e3b7')
     ]
+    categories = [
+        'ceiling',
+        'floor',
+        'wall',
+        'beam',
+        'column',
+        'window',
+        'door',
+        'table',
+        'chair',
+        'sofa',
+        'bookcase',
+        'board',
+        'clutter'
+    ]
 
     def __init__(self, root, train=True, test_area=5, transform=None, download=False):
         self.root = root
