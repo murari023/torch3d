@@ -26,6 +26,14 @@ class ModelNet40(Dataset):
             ('ply_data_test1.h5', 'aba4b12a67c34391cc3c015a6f08ed4b')
         ]
     }
+    categories = [
+        'airplane', 'bathtub', 'bed', 'bench', 'bookshelf', 'bottle', 'bowl',
+        'car', 'chair', 'cone', 'cup', 'curtain', 'desk', 'door', 'dresser',
+        'flower_pot', 'glass_box', 'guitar', 'keyboard', 'lamp', 'laptop',
+        'mantel', 'monitor', 'night_stand', 'person', 'piano', 'plant', 'radio',
+        'range_hood', 'sink', 'sofa', 'stairs', 'stool', 'table', 'tent',
+        'toilet', 'tv_stand', 'vase', 'wardrobe', 'xbox'
+    ]
 
     def __init__(self, root, train=True, transform=None, download=False):
         self.root = root
@@ -53,8 +61,7 @@ class ModelNet40(Dataset):
             self.targets.append(np.array(h5['label'][:]))
             h5.close()
         self.samples = np.concatenate(self.samples, axis=0)
-        self.targets = np.concatenate(self.targets, axis=0)
-        self.targets = np.squeeze(self.targets).astype(np.int64)
+        self.targets = np.concatenate(self.targets, axis=0).squeeze()
 
     def __len__(self):
         return len(self.samples)

@@ -75,10 +75,8 @@ class S3DIS(Dataset):
         self.samples = self.samples[indices]
         self.targets = self.targets[indices]
 
-
     def __len__(self):
         return len(self.samples)
-
 
     def __getitem__(self, i):
         sample = self.samples[i]
