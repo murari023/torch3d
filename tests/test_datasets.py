@@ -5,7 +5,7 @@ import numpy as np
 import torch3d.datasets as datasets
 
 
-class TestDataset:
+class TestDatasets:
     def test_modelnet40(self):
         root = 'data'
         dataset = datasets.ModelNet40(root, download=True)
