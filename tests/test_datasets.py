@@ -7,18 +7,17 @@ import torch3d.datasets as datasets
 
 class TestDataset:
     def test_modelnet40(self):
-        root = tempfile.mkdtemp()
+        root = 'data'
         dataset = datasets.ModelNet40(root, download=True)
         assert len(dataset) == 9840
-        shutil.rmtree(root)
         sample, target = dataset[0]
         assert isinstance(sample, np.ndarray)
         assert isinstance(target, np.int64)
 
     def test_s3dis(self):
-        root = tempfile.mkdtemp()
+        root = 'data'
         dataset = datasets.S3DIS(root, download=True)
-        shutil.rmtree(root)
+        assert len(dataset) == 16733
         sample, target = dataset[0]
         assert isinstance(sample, np.ndarray)
         assert isinstance(target, np.ndarray)
