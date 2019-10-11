@@ -24,7 +24,7 @@ class PointCNN(nn.Module):
             nn.Dropout(0.2),
             nn.Conv1d(256, 128, 1),
             nn.BatchNorm1d(128),
-            nn.ReLU(),
+            nn.ReLU(True),
             nn.Dropout(0.2)
         )
         self.fc = nn.Conv1d(128, num_classes, 1)
@@ -43,10 +43,3 @@ class PointCNN(nn.Module):
         x = self.fc(x)
         x = self.avgpool(x).squeeze(2)
         return x
-
-
-if __name__ == '__main__':
-    model = PointCNN(0, 40)
-    x = torch.rand([1, 3, 1024])
-    y = model(x)
-    print(y.shape)

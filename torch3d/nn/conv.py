@@ -41,30 +41,24 @@ class XConv(nn.Module):
 
     def forward(self, p, q, x=None):
         batch_size = p.shape[0]
-
         # Find k-nearest neighbors
         p = p.permute(0, 2, 1)
         q = q.permute(0, 2, 1)
-
         _, indices = ops.knn(q, p, self.kernel_size * self.dilation)
         indices = indices[..., ::self.dilation]
-
         p = self._gather_nd(p, indices)
         p_hat = p - q.unsqueeze(2)
         p_hat = p_hat.permute(0, 3, 1, 2)
         x_hat = self.mlp(p_hat)
         x_hat = x_hat.permute(0, 2, 3, 1)
-
         if x is not None:
             x = x.permute(0, 2, 1)
             x = self._gather_nd(x, indices)
             x_hat = torch.cat([x_hat, x], dim=-1)
-
         T = self.stn(p_hat)
         T = T.view(batch_size, self.kernel_size, self.kernel_size, -1)
         T = T.permute(0, 3, 1, 2)
         x_hat = torch.matmul(T, x_hat)
-
         x = x_hat
         x = x.permute(0, 3, 1, 2)
         x = self.conv(x)
