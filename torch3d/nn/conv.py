@@ -17,24 +17,24 @@ class XConv(nn.Module):
         self.kernel_size = kernel_size
         self.dilation = dilation
         self.mlp = nn.Sequential(
-            nn.Conv2d(3, self.mid_channels, 1, bias=False),
+            nn.Conv2d(3, self.mid_channels, 1),
             nn.BatchNorm2d(self.mid_channels),
             nn.ReLU(True),
-            nn.Conv2d(self.mid_channels, self.mid_channels, 1, bias=False),
+            nn.Conv2d(self.mid_channels, self.mid_channels, 1),
             nn.BatchNorm2d(self.mid_channels),
             nn.ReLU(True),
         )
         self.stn = nn.Sequential(
-            nn.Conv2d(3, self.kernel_size ** 2, [1, self.kernel_size], bias=False),
+            nn.Conv2d(3, self.kernel_size ** 2, (1, self.kernel_size)),
             nn.BatchNorm2d(self.kernel_size ** 2),
             nn.ReLU(True),
-            nn.Conv2d(self.kernel_size ** 2, self.kernel_size ** 2, 1, bias=False),
+            nn.Conv2d(self.kernel_size ** 2, self.kernel_size ** 2, 1),
             nn.BatchNorm2d(self.kernel_size ** 2),
             nn.ReLU(True),
-            nn.Conv2d(self.kernel_size ** 2, self.kernel_size ** 2, 1, bias=False),
+            nn.Conv2d(self.kernel_size ** 2, self.kernel_size ** 2, 1),
         )
         self.conv = nn.Sequential(
-            nn.Conv2d(self.in_channels + self.mid_channels, self.out_channels, [1, self.kernel_size], bias=False),
+            nn.Conv2d(self.in_channels + self.mid_channels, self.out_channels, (1, self.kernel_size)),
             nn.BatchNorm2d(self.out_channels),
             nn.ReLU(True),
         )
@@ -69,7 +69,8 @@ class XConv(nn.Module):
         x = x.permute(0, 3, 1, 2)
         x = self.conv(x)
         x = x.squeeze(3)
-        return x
+        q = q.permute(0, 2, 1)
+        return q, x
 
     def _gather_nd(self, x, index):
         x = [x[b, i, :] for b, i in enumerate(torch.unbind(index, dim=0))]

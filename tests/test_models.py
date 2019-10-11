@@ -13,6 +13,9 @@ class TestModels:
         y = model(x)
         assert y.shape[-1] == num_classes
 
+    def test_pointcnn(self):
+        pass
+
     def test_pointnet_segmentation(self):
         in_channels = 3
         num_points = 1024
