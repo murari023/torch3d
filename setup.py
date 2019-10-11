@@ -10,6 +10,7 @@ requirements = [
 ]
 
 __version__ = '0.1.0'
+url = 'https://github.com/pqhieu/torch3d'
 
 setup(
     name='torch3d',
@@ -17,7 +18,7 @@ setup(
     description='Datasets and network architectures for 3D deep learning in PyTorch',
     author='Quang-Hieu Pham',
     author_email='pqhieu1192@gmail.com',
-    url='https://github.com/pqhieu/torch3d',
+    url='{}/archive/{}.tar.gz'.format(url, __version__),
     install_requires=requirements,
     ext_modules=ext_modules,
     cmdclass={'build_ext': BuildExtension},
