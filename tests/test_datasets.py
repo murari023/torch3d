@@ -12,7 +12,6 @@ class TestDatasets:
         assert len(dataset) == 9840
         sample, target = dataset[0]
         assert isinstance(sample, np.ndarray)
-        assert isinstance(target, np.int64)
 
     def test_s3dis(self):
         root = 'data'

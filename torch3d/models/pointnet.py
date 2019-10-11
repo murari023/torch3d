@@ -38,8 +38,6 @@ class PointNet(nn.Module):
             nn.Dropout(0.2),
         )
         self.fc = nn.Linear(256, num_classes)
-        if init_weights:
-            self._initialize_weights()
 
     def forward(self, x):
         x = self.mlp1(x)

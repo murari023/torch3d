@@ -38,8 +38,6 @@ class PointNet(nn.Module):
             nn.ReLU(),
         )
         self.fc = nn.Conv1d(128, num_classes, 1)
-        if init_weights:
-            self._initialize_weights()
 
     def forward(self, x):
         num_points = x.shape[2]
@@ -50,17 +48,3 @@ class PointNet(nn.Module):
         x = self.mlp3(x)
         x = self.fc(x)
         return x
-
-    def _initialize_weights(self):
-        for m in self.modules():
-            if isinstance(m, nn.Conv1d):
-                nn.init.kaiming_normal_(m.weight, nonlinearity='relu')
-                if m.bias is not None:
-                    nn.init.constant_(m.bias, 0)
-            elif isinstance(m, nn.BatchNorm1d):
-                nn.init.constant_(m.weight, 1)
-                nn.init.constant_(m.bias, 0)
-            elif isinstance(m, nn.Linear):
-                nn.init.normal_(m.weight, 0, 0.01)
-                if m.bias is not None:
-                    nn.init.constant_(m.bias, 0)
