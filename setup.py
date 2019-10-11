@@ -2,12 +2,14 @@ import glob
 from setuptools import setup, find_packages
 from torch.utils.cpp_extension import BuildExtension, CUDAExtension, CUDA_HOME
 
+
 requirements = [
     'h5py',
     'numpy',
     'torch',
     'torchvision'
 ]
+ext_modules = []
 
 __version__ = '0.1.0'
 url = 'https://github.com/pqhieu/torch3d'

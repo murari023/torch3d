@@ -3,6 +3,14 @@ import numpy as np
 from . import functional as F
 
 
+__all__ = [
+    'Compose',
+    'ToTensor',
+    'Shuffle',
+    'Downsample',
+]
+
+
 class Compose(object):
     """
     Composes several transforms together.
