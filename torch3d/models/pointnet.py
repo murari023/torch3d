@@ -16,25 +16,25 @@ class PointNet(nn.Module):
             nn.BatchNorm1d(64),
             nn.Conv1d(64, 64, 1, bias=False),
             nn.BatchNorm1d(64),
-            nn.ReLU(),
+            nn.ReLU(True),
         )
         self.mlp2 = nn.Sequential(
             nn.Conv1d(64, 128, 1, bias=False),
             nn.BatchNorm1d(128),
-            nn.ReLU(),
+            nn.ReLU(True),
             nn.Conv1d(128, 1024, 1, bias=False),
             nn.BatchNorm1d(1024),
-            nn.ReLU(),
+            nn.ReLU(True),
         )
         self.maxpool = nn.AdaptiveMaxPool1d(1)
         self.mlp3 = nn.Sequential(
             nn.Linear(1024, 512, bias=False),
             nn.BatchNorm1d(512),
-            nn.ReLU(),
+            nn.ReLU(True),
             nn.Dropout(0.2),
             nn.Linear(512, 256, bias=False),
             nn.BatchNorm1d(256),
-            nn.ReLU(),
+            nn.ReLU(True),
             nn.Dropout(0.2),
         )
         self.fc = nn.Linear(256, num_classes)

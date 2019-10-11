@@ -17,6 +17,7 @@ def _is_numpy_point_cloud(pcd):
 def to_tensor(pcd):
     """
     Convert a ``numpy.ndarray`` point cloud to `Tensor`.
+
     """
 
     if not _is_numpy(pcd):

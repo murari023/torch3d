@@ -14,6 +14,7 @@ class Compose(object):
         >>>     transforms.Shuffle(),
         >>>     transforms.ToTensor(),
         >>> ])
+
     """
 
     def __init__(self, transforms):
