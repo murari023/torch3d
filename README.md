@@ -25,6 +25,11 @@ Torch3d requires PyTorch 1.2 or newer. Some other dependencies are:
 - torchvision (only needed to download datasets, may consider dropping it later)
 - h5py
 
+From PyPi:
+```bash
+pip install torch3d
+```
+
 From source:
 
 ```bash
@@ -36,6 +41,6 @@ python setup.py install
 Roadmap
 -------
 
-**v0.1**
+**0.1.0**
 - [X] PointCNN model
-- [ ] Publish on PyPi
+- [X] Publish on PyPi
