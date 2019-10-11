@@ -11,18 +11,6 @@ requirements = [
 
 __version__ = '0.1.0'
 
-ext_modules = []
-if CUDA_HOME is not None:
-    sources = []
-    sources += glob.glob('torch3d/csrc/*.cpp')
-    sources += glob.glob('torch3d/csrc/cuda/*.cu')
-    ext_modules = [
-        CUDAExtension(
-            'torch3d._C',
-            sources=sources
-        )
-    ]
-
 setup(
     name='torch3d',
     version=__version__,

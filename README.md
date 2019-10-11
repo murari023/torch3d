@@ -37,6 +37,5 @@ Roadmap
 -------
 
 **v0.1**
-- [ ] PointCNN models
+- [X] PointCNN model
 - [ ] Publish on PyPi
-- [ ] Improve documentation
