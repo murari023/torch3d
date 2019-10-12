@@ -41,6 +41,12 @@ python setup.py install
 Roadmap
 -------
 
+**0.2.0**
+- [ ] PointNet++ model
+- [ ] Transformations: jitter, rotation
+- [ ] Runtime benchmarking
+- [ ] Datasets: ShapeNetPart
+
 **0.1.0**
 - [X] PointCNN model
 - [X] Publish on PyPi
