@@ -21,10 +21,10 @@ def to_tensor(pcd):
     """
 
     if not _is_numpy(pcd):
-        raise TypeError('pcd should be an ndarray. Got {}.'.format(type(pcd)))
+        raise TypeError("pcd should be an ndarray. Got {}.".format(type(pcd)))
 
     if not _is_numpy_point_cloud(pcd):
-        raise ValueError('pcd should be 2 dimensional. Got {} dimensions.'.format(pcd.ndim))
+        raise ValueError("pcd should be 2 dimensional. Got {} dimensions.".format(pcd.ndim))
 
     pcd = torch.from_numpy(pcd.transpose((1, 0)))
     return pcd

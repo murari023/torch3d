@@ -2,7 +2,7 @@ import torch
 
 
 __all__ = [
-    'knn',
+    "knn",
 ]
 
 

@@ -3,7 +3,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 
-__all__ = ['PointNet']
+__all__ = ["PointNet"]
 
 
 class PointNet(nn.Module):

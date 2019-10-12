@@ -4,10 +4,10 @@ from . import functional as F
 
 
 __all__ = [
-    'Compose',
-    'ToTensor',
-    'Shuffle',
-    'Downsample',
+    "Compose",
+    "ToTensor",
+    "Shuffle",
+    "Downsample",
 ]
 
 
@@ -52,12 +52,12 @@ class Shuffle(object):
 
 
 class Downsample(object):
-    def __init__(self, num_samples, mode='random'):
+    def __init__(self, num_samples, mode="random"):
         self.num_samples = num_samples
         self.mode = mode
 
     def __call__(self, sample, target):
-        if self.mode == 'random':
+        if self.mode == "random":
             n = len(sample)
             choice = np.random.choice(n, self.num_samples, replace=False)
 

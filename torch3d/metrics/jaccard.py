@@ -3,7 +3,7 @@ from .metric import Metric
 
 
 class Jaccard(Metric):
-    name = 'jaccard'
+    name = "jaccard"
 
     def __init__(self, num_classes, transform=None):
         self.transform = transform
@@ -31,15 +31,15 @@ class Jaccard(Metric):
         return torch.mean(values).item()
 
     def report(self, categories=None):
-        print('----------------------------------------------------------------')
-        print("{:<25}  {:>10} {:>10} {:>10}".format('Category', 'IoU', 'Inter.', 'Union'))
-        print('================================================================')
+        print("----------------------------------------------------------------")
+        print("{:<25}  {:>10} {:>10} {:>10}".format("Category", "IoU", "Inter.", "Union"))
+        print("================================================================")
         values = (self.inter + self.smooth) / (self.union + self.smooth)
         if categories is None:
             categories = list(range(self.num_classes))
         for i in range(self.num_classes):
-            print('{:<25}  {:>10.3f} {:>10.0f} {:>10.0f}'.format(
+            print("{:<25}  {:>10.3f} {:>10.0f} {:>10.0f}".format(
                 categories[i], values[i], self.inter[i], self.union[i]))
-        print('================================================================')
+        print("================================================================")
         mean = torch.mean(values).item()
-        print('Mean IoU: {:.3f}'.format(mean))
+        print("Mean IoU: {:.3f}".format(mean))

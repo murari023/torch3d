@@ -4,7 +4,7 @@ import torch3d.ops as ops
 
 
 __all__ = [
-    'XConv'
+    "XConv"
 ]
 
 

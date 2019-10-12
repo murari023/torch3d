@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 
 
-__all__ = ['PointNet']
+__all__ = ["PointNet"]
 
 
 class PointNet(nn.Module):
