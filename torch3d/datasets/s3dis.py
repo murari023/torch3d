@@ -71,7 +71,7 @@ class S3DIS(Dataset):
         self.targets = []
 
         for filename, md5 in self.flist:
-            h5 = h5py.File(os.path.join(self.root, self.basedir, filename), "r")
+            h5 = h5py.File(os.path.join(self.root, self.__class__.__name__, filename), "r")
             assert "data" in h5 and "label" in h5
             self.samples.append(np.array(h5["data"][:]))
             self.targets.append(np.array(h5["label"][:]))
@@ -81,7 +81,7 @@ class S3DIS(Dataset):
         self.targets = np.squeeze(self.targets).astype(np.int64)
 
         # Filter point cloud not in area of interest
-        with open(os.path.join(self.root, self.basedir, "room_filelist.txt")) as fp:
+        with open(os.path.join(self.root, self.__class__.__name__, "room_filelist.txt")) as fp:
             rooms = [x.strip() for x in fp]
         area = "Area_" + str(self.test_area)
         indices = [i for i, room in enumerate(rooms) if area in room]
@@ -103,10 +103,12 @@ class S3DIS(Dataset):
     def download(self):
         if not self._check_integrity():
             download_and_extract_archive(self.url, self.root)
+            os.rename(os.path.join(self.root, self.basedir),
+                      os.path.join(self.root, self.__class__.__name__))
 
     def _check_integrity(self):
         for filename, md5 in (self.flist):
-            fpath = os.path.join(self.root, self.basedir, filename)
+            fpath = os.path.join(self.root, self.__class__.__name__, filename)
             if not check_integrity(fpath, md5):
                 return False
         return True

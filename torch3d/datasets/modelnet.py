@@ -89,7 +89,7 @@ class ModelNet40(Dataset):
         self.targets = []
 
         for filename, md5 in flist:
-            h5 = h5py.File(os.path.join(self.root, self.basedir, filename), "r")
+            h5 = h5py.File(os.path.join(self.root, self.__class__.__name__, filename), "r")
             assert "data" in h5 and "label" in h5
             self.samples.append(np.array(h5["data"][:]))
             self.targets.append(np.array(h5["label"][:]))
@@ -113,7 +113,7 @@ class ModelNet40(Dataset):
 
     def _check_integrity(self):
         for filename, md5 in (self.splits["train"] + self.splits["test"]):
-            fpath = os.path.join(self.root, self.basedir, filename)
+            fpath = os.path.join(self.root, self.__class__.__name__, filename)
             if not check_integrity(fpath, md5):
                 return False
         return True

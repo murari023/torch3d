@@ -2,9 +2,7 @@ import torch
 import torch.nn as nn
 
 
-__all__ = [
-    "Downsample"
-]
+__all__ = ["Downsample"]
 
 
 class Downsample(nn.Module):

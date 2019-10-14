@@ -1,6 +1,5 @@
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
 
 
 __all__ = ["PointNet"]
@@ -14,6 +13,7 @@ class PointNet(nn.Module):
         self.mlp1 = nn.Sequential(
             nn.Conv1d(self.in_channels, 64, 1),
             nn.BatchNorm1d(64),
+            nn.ReLU(True),
             nn.Conv1d(64, 64, 1),
             nn.BatchNorm1d(64),
             nn.ReLU(True),

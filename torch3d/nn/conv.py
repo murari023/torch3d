@@ -3,9 +3,7 @@ import torch.nn as nn
 import torch3d.ops as ops
 
 
-__all__ = [
-    "XConv"
-]
+__all__ = ["XConv"]
 
 
 class XConv(nn.Module):
