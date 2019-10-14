@@ -8,6 +8,7 @@ __all__ = [
     "ToTensor",
     "Shuffle",
     "Downsample",
+    "RandomRotate",
 ]
 
 
@@ -64,4 +65,31 @@ class Downsample(object):
         sample = sample[choice]
         if isinstance(target, np.ndarray):
             target = target[choice]
+        return sample, target
+
+
+class Jitter(object):
+    def __init__(self, sigma=0.01, clip=0.05):
+        self.sigma = sigma
+        self.clip = clip
+
+    def __call__(self, sample, target):
+        sample = F.jitter(sample, sigma, clip)
+        return sample, target
+
+
+class Rotate(object):
+    def __init__(self, axis="z"):
+        if axis == "x":
+            self.axis = np.array([1.0, 0.0, 0.0])
+        elif axis == "y":
+            self.axis = np.array([0.0, 1.0, 0.0])
+        elif axis == "z":
+            self.axis = np.array([0.0, 0.0, 1.0])
+        else:
+            self.axis = axis
+
+    def __call__(self, sample, target):
+        angle = np.random.uniform(-np.pi, np.pi)
+        sample = F.rotate(sample, angle, axis)
         return sample, target

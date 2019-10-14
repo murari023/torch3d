@@ -1,3 +1,4 @@
+import math
 import torch
 import numpy as np
 
@@ -28,3 +29,13 @@ def to_tensor(pcd):
 
     pcd = torch.from_numpy(pcd.transpose((1, 0)))
     return pcd
+
+
+def jitter(pcd, sigma, clip):
+    pcd += sigma * np.clip(np.random.rand(pcd.shape), -clip, clip)
+    return pcd
+
+
+def rotate(pcd, angle, axis):
+    s = math.sin(angle)
+    c = math.cos(angle)

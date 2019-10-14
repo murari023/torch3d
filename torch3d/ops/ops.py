@@ -1,9 +1,7 @@
 import torch
 
 
-__all__ = [
-    "knn",
-]
+__all__ = ["knn"]
 
 
 def knn(x, y, k):
