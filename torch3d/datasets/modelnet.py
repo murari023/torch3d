@@ -26,7 +26,7 @@ class ModelNet40(Dataset):
             ("ply_data_test1.h5", "aba4b12a67c34391cc3c015a6f08ed4b")
         ]
     }
-    categories = [
+    class_names = [
         "airplane",
         "bathtub",
         "bed",
