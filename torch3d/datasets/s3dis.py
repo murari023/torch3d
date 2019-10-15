@@ -39,7 +39,7 @@ class S3DIS(Dataset):
         ("ply_data_all_22.h5", "a01ae14ceff1165ad49e1973570c08c5"),
         ("ply_data_all_23.h5", "67e8c5a7179babe18f110ebea1d3e3b7")
     ]
-    class_names = [
+    categories = [
         "ceiling",
         "floor",
         "wall",
