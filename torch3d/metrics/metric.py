@@ -7,6 +7,3 @@ class Metric(object):
 
     def score(self):
         raise NotImplementedError
-
-    def report(self):
-        raise NotImplementedError

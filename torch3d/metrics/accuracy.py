@@ -29,18 +29,3 @@ class Accuracy(Metric):
     def score(self):
         val = torch.sum(self.count) / torch.sum(self.total)
         return val.item()
-
-    def report(self, categories=None):
-        print("----------------------------------------------------------------")
-        print("{:<25}  {:>10} {:>10} {:>10}".format("Category", "Accuracy", "Correct", "Total"))
-        print("================================================================")
-        values = self.count / self.total
-        if categories is None:
-            categories = list(range(self.num_classes))
-        for i in range(self.num_classes):
-            print("{:<25}  {:>10.3f} {:>10.0f} {:>10.0f}".format(
-                categories[i], values[i], self.count[i], self.total[i]))
-        print("================================================================")
-        mean = torch.mean(values).item()
-        print("Mean accuracy: {:.3f}".format(mean))
-        print("Overall accuracy: {:.3f}".format(self.score()))
