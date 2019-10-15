@@ -67,18 +67,17 @@ class S3DIS(Dataset):
         if not self._check_integrity():
             raise RuntimeError("Dataset not found or corrupted.")
 
-        self.samples = []
+        self.dataset = []
         self.targets = []
 
         for filename, md5 in self.flist:
             h5 = h5py.File(os.path.join(self.root, self.__class__.__name__, filename), "r")
             assert "data" in h5 and "label" in h5
-            self.samples.append(np.array(h5["data"][:]))
+            self.dataset.append(np.array(h5["data"][:]))
             self.targets.append(np.array(h5["label"][:]))
             h5.close()
-        self.samples = np.concatenate(self.samples, axis=0)
-        self.targets = np.concatenate(self.targets, axis=0)
-        self.targets = np.squeeze(self.targets).astype(np.int64)
+        self.dataset = np.concatenate(self.dataset, axis=0)
+        self.targets = np.concatenate(self.targets, axis=0).squeeze()
 
         # Filter point cloud not in area of interest
         with open(os.path.join(self.root, self.__class__.__name__, "room_filelist.txt")) as fp:
@@ -87,18 +86,18 @@ class S3DIS(Dataset):
         indices = [i for i, room in enumerate(rooms) if area in room]
         if self.train:
             indices = list(set(range(len(rooms))) - set(indices))
-        self.samples = self.samples[indices]
+        self.dataset = self.dataset[indices]
         self.targets = self.targets[indices]
 
     def __len__(self):
-        return len(self.samples)
+        return len(self.dataset)
 
     def __getitem__(self, i):
-        sample = self.samples[i]
+        points = self.dataset[i]
         target = self.targets[i]
         if self.transform is not None:
-            sample, target = self.transform(sample, target)
-        return sample, target
+            points, target = self.transform(points, target)
+        return points, target
 
     def download(self):
         if not self._check_integrity():

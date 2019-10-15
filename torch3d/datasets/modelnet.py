@@ -85,31 +85,33 @@ class ModelNet40(Dataset):
         else:
             flist = self.splits["test"]
 
-        self.samples = []
+        self.dataset = []
         self.targets = []
 
         for filename, md5 in flist:
             h5 = h5py.File(os.path.join(self.root, self.__class__.__name__, filename), "r")
             assert "data" in h5 and "label" in h5
-            self.samples.append(np.array(h5["data"][:]))
+            self.dataset.append(np.array(h5["data"][:]))
             self.targets.append(np.array(h5["label"][:]))
             h5.close()
-        self.samples = np.concatenate(self.samples, axis=0)
+        self.dataset = np.concatenate(self.dataset, axis=0)
         self.targets = np.concatenate(self.targets, axis=0).squeeze()
 
     def __len__(self):
-        return len(self.samples)
+        return len(self.dataset)
 
     def __getitem__(self, i):
-        sample = self.samples[i]
+        points = self.dataset[i]
         target = self.targets[i]
         if self.transform is not None:
-            sample, target = self.transform(sample, target)
-        return sample, target
+            points, target = self.transform(points, target)
+        return points, target
 
     def download(self):
         if not self._check_integrity():
             download_and_extract_archive(self.url, self.root)
+            os.rename(os.path.join(self.root, self.basedir),
+                      os.path.join(self.root, self.__class__.__name__))
 
     def _check_integrity(self):
         for filename, md5 in (self.splits["train"] + self.splits["test"]):

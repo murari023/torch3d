@@ -10,13 +10,13 @@ class TestDatasets:
         root = "data"
         dataset = datasets.ModelNet40(root, download=True)
         assert len(dataset) == 9840
-        sample, target = dataset[0]
-        assert isinstance(sample, np.ndarray)
+        points, target = dataset[0]
+        assert isinstance(points, np.ndarray)
 
     def test_s3dis(self):
         root = "data"
         dataset = datasets.S3DIS(root, download=True)
         assert len(dataset) == 16733
-        sample, target = dataset[0]
-        assert isinstance(sample, np.ndarray)
+        points, target = dataset[0]
+        assert isinstance(points, np.ndarray)
         assert isinstance(target, np.ndarray)
