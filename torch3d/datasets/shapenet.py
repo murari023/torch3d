@@ -1,5 +1,5 @@
 import os
-import h5py
+import json
 import numpy as np
 from torch.utils.data import Dataset
 from torchvision.datasets.utils import download_and_extract_archive, check_integrity
@@ -43,8 +43,17 @@ class ShapeNetPart(Dataset):
         if not self._check_integrity():
             raise RuntimeError("Dataset not found or corrupted.")
 
+        fpath = "shuffled_{}_file_list.json".format(self.split)
+        fpath = os.path.join(self.root, self.__class__.__name__, "train_test_split", fpath)
+        with open(fpath, "r") as fp:
+            flist = json.load(fp)
+            flist = sorted([x.replace("shape_data", self.__class__.__name__) for x in flist])
+
         self.dataset = []
         self.targets = []
+
+        for filename in flist:
+            pass
 
     def download(self):
         if not self._check_integrity():

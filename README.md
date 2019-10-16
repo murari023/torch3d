@@ -1,10 +1,10 @@
-Torch3d
+torch3d
 =======
 
-The Torch3d package consists of datasets, model architectures, and common
+The torch3d package consists of datasets, model architectures, and common
 operations for 3D deep learning.
 
-Why Torch3d?
+Why torch3d?
 ------------
 
 For 3D domain, there is currently no official support from PyTorch that likes
@@ -14,14 +14,13 @@ on discrete 3D domain. Currently, it focuses on deep learning methods on 3D
 point clouds.
 
 The following network architectures are currently included:
-
 - **PointNet** from Qi et al. (CVPR 2017) [[arXiv](https://arxiv.org/abs/1612.00593)]
 - **PointCNN** from Li et al. (NeurIPS 2018) [[arXiv](https://arxiv.org/abs/1801.07791)]
 
 Installation
 ------------
 
-Torch3d requires PyTorch 1.2 or newer. Some other dependencies are:
+Required PyTorch 1.2 or newer. Some other dependencies are:
 - torchvision (only needed to download datasets, may consider dropping it later)
 - h5py
 
@@ -31,7 +30,6 @@ pip install torch3d
 ```
 
 From source:
-
 ```bash
 git clone https://github.com/pqhieu/torch3d
 cd torch3d
@@ -44,8 +42,7 @@ Roadmap
 **0.2.0**
 - [ ] PointNet++ model
 - [ ] Transformations: jitter, rotation
-- [ ] Runtime benchmarking
-- [ ] Datasets: ShapeNetPart
+- [X] Datasets: ShapeNetPart
 
 **0.1.0**
 - [X] PointCNN model
