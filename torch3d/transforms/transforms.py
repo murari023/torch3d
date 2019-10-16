@@ -9,6 +9,11 @@ __all__ = [
 ]
 
 
+class Compose(object):
+    def __call__(self, *args):
+        pass
+
+
 class ToTensor(object):
     def __call__(self, pcd):
         return F.to_tensor(pcd)

@@ -11,6 +11,7 @@ class S3DIS(Dataset):
 
     """
 
+    name = "s3dis"
     url = "https://shapenet.cs.stanford.edu/media/indoor3d_sem_seg_hdf5_data.zip"
     basedir = "indoor3d_sem_seg_hdf5_data"
     flist = [
@@ -55,7 +56,12 @@ class S3DIS(Dataset):
         "clutter"
     ]
 
-    def __init__(self, root, train=True, test_area=5, transform=None, download=False):
+    def __init__(self,
+                 root,
+                 train=True,
+                 test_area=5,
+                 transform=None,
+                 download=False):
         self.root = root
         self.train = train
         self.test_area = test_area
@@ -71,7 +77,7 @@ class S3DIS(Dataset):
         self.targets = []
 
         for filename, md5 in self.flist:
-            h5 = h5py.File(os.path.join(self.root, self.__class__.__name__, filename), "r")
+            h5 = h5py.File(os.path.join(self.root, self.name, filename), "r")
             assert "data" in h5 and "label" in h5
             self.dataset.append(np.array(h5["data"][:]))
             self.targets.append(np.array(h5["label"][:]))
@@ -80,7 +86,7 @@ class S3DIS(Dataset):
         self.targets = np.concatenate(self.targets, axis=0).squeeze()
 
         # Filter point cloud not in area of interest
-        with open(os.path.join(self.root, self.__class__.__name__, "room_filelist.txt")) as fp:
+        with open(os.path.join(self.root, self.name, "room_filelist.txt")) as fp:
             rooms = [x.strip() for x in fp]
         area = "Area_" + str(self.test_area)
         indices = [i for i, room in enumerate(rooms) if area in room]
@@ -103,11 +109,11 @@ class S3DIS(Dataset):
         if not self._check_integrity():
             download_and_extract_archive(self.url, self.root)
             os.rename(os.path.join(self.root, self.basedir),
-                      os.path.join(self.root, self.__class__.__name__))
+                      os.path.join(self.root, self.name))
 
     def _check_integrity(self):
         for filename, md5 in (self.flist):
-            fpath = os.path.join(self.root, self.__class__.__name__, filename)
+            fpath = os.path.join(self.root, self.name, filename)
             if not check_integrity(fpath, md5):
                 return False
         return True

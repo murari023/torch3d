@@ -11,6 +11,7 @@ class ModelNet40(Dataset):
 
     """
 
+    name = "modelnet40"
     url = "https://shapenet.cs.stanford.edu/media/modelnet40_ply_hdf5_2048.zip"
     basedir = "modelnet40_ply_hdf5_2048"
     splits = {
@@ -69,7 +70,12 @@ class ModelNet40(Dataset):
         "xbox"
     ]
 
-    def __init__(self, root, train=True, transform=None, download=False):
+    def __init__(self,
+                 root,
+                 train=True,
+                 transform=None,
+                 download=False,
+                 categories=None):
         self.root = root
         self.train = train
         self.transform = transform
@@ -89,7 +95,7 @@ class ModelNet40(Dataset):
         self.targets = []
 
         for filename, md5 in flist:
-            h5 = h5py.File(os.path.join(self.root, self.__class__.__name__, filename), "r")
+            h5 = h5py.File(os.path.join(self.root, self.name, filename), "r")
             assert "data" in h5 and "label" in h5
             self.dataset.append(np.array(h5["data"][:]))
             self.targets.append(np.array(h5["label"][:]))
@@ -111,11 +117,11 @@ class ModelNet40(Dataset):
         if not self._check_integrity():
             download_and_extract_archive(self.url, self.root)
             os.rename(os.path.join(self.root, self.basedir),
-                      os.path.join(self.root, self.__class__.__name__))
+                      os.path.join(self.root, self.name))
 
     def _check_integrity(self):
         for filename, md5 in (self.splits["train"] + self.splits["test"]):
-            fpath = os.path.join(self.root, self.__class__.__name__, filename)
+            fpath = os.path.join(self.root, self.name, filename)
             if not check_integrity(fpath, md5):
                 return False
         return True

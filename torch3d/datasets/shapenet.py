@@ -11,6 +11,7 @@ class ShapeNetPart(Dataset):
 
     """
 
+    name = "shapenetpart"
     url = "https://shapenet.cs.stanford.edu/ericyi/shapenetcore_partanno_segmentation_benchmark_v0.zip"
     basedir = "shapenetcore_partanno_segmentation_benchmark_v0"
     cat2synset = {
@@ -32,7 +33,12 @@ class ShapeNetPart(Dataset):
         "table": "04379243"
     }
 
-    def __init__(self, root, split="train", transform=None, download=False, categories=None):
+    def __init__(self,
+                 root,
+                 split="train",
+                 transform=None,
+                 download=False,
+                 categories=None):
         self.root = root
         self.split = split
         self.transform = transform
@@ -44,10 +50,10 @@ class ShapeNetPart(Dataset):
             raise RuntimeError("Dataset not found or corrupted.")
 
         fpath = "shuffled_{}_file_list.json".format(self.split)
-        fpath = os.path.join(self.root, self.__class__.__name__, "train_test_split", fpath)
+        fpath = os.path.join(self.root, self.name, "train_test_split", fpath)
         with open(fpath, "r") as fp:
             flist = json.load(fp)
-            flist = sorted([x.replace("shape_data", self.__class__.__name__) for x in flist])
+            flist = sorted([x.replace("shape_data", self.name) for x in flist])
 
         self.dataset = []
         self.targets = []
@@ -59,11 +65,11 @@ class ShapeNetPart(Dataset):
         if not self._check_integrity():
             download_and_extract_archive(self.url, self.root)
             os.rename(os.path.join(self.root, self.basedir),
-                      os.path.join(self.root, self.__class__.__name__))
+                      os.path.join(self.root, self.name))
 
     def _check_integrity(self):
         for _, d in self.cat2synset.items():
-            fpath = os.path.join(self.root, self.__class__.__name__, d)
+            fpath = os.path.join(self.root, self.name, d)
             if not os.path.exists(fpath):
                 return False
             return True

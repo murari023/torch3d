@@ -23,7 +23,7 @@ class XConv(nn.Module):
             nn.ReLU(True),
         )
         self.stn = nn.Sequential(
-            nn.Conv2d(3, self.kernel_size ** 2, (1, self.kernel_size)),
+            nn.Conv2d(3, self.kernel_size ** 2, [1, self.kernel_size]),
             nn.BatchNorm2d(self.kernel_size ** 2),
             nn.ReLU(True),
             nn.Conv2d(self.kernel_size ** 2, self.kernel_size ** 2, 1),
@@ -32,7 +32,9 @@ class XConv(nn.Module):
             nn.Conv2d(self.kernel_size ** 2, self.kernel_size ** 2, 1),
         )
         self.conv = nn.Sequential(
-            nn.Conv2d(self.in_channels + self.mid_channels, self.out_channels, (1, self.kernel_size)),
+            nn.Conv2d(self.in_channels + self.mid_channels,
+                      self.out_channels,
+                      [1, self.kernel_size]),
             nn.BatchNorm2d(self.out_channels),
             nn.ReLU(True),
         )
