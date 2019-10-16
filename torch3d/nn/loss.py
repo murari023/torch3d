@@ -3,10 +3,10 @@ import torch.nn as nn
 import torch3d.ops as ops
 
 
-__all__ ["ChamferLoss"]
+__all__ = ["ChamferLoss"]
 
 
-def ChamferLoss(nn.Module):
+class ChamferLoss(nn.Module):
     def __init__(self, transform=None):
         super(ChamferLoss, self).__init__()
         self.transform = transform

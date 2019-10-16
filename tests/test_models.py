@@ -2,35 +2,16 @@ import torch
 import torch3d.models as models
 
 
-class TestModels:
-    def test_pointnet(self):
-        in_channels = 3
-        num_points = 1024
-        num_classes = 50
-        model = models.PointNet(in_channels, num_classes)
-        model.eval()
-        x = torch.rand([1, in_channels, num_points])
-        y = model(x)
-        assert y.shape[-1] == num_classes
+class TestPointNet:
+    batch_size = 8
+    num_points = 1024
+    in_channels = 3
+    num_classes = 100
+    output_shape = torch.Size([batch_size, num_classes])
+    model = models.PointNet(in_channels, num_classes)
 
-    def test_pointnet_segmentation(self):
-        in_channels = 3
-        num_points = 1024
-        num_classes = 50
-        model = models.segmentation.PointNet(in_channels, num_classes)
-        model.eval()
-        x = torch.rand([1, in_channels, num_points])
-        y = model(x)
-        assert y.shape[1] == num_classes
-        assert y.shape[2] == num_points
-
-    def test_pointcnn(self):
-        in_channels = 3
-        num_points = 1024
-        num_classes = 50
-        model = models.PointCNN(in_channels, num_classes)
-        model.eval()
-        p = torch.rand([1, in_channels, num_points])
-        x = torch.rand([1, in_channels, num_points])
-        y = model(p, x)
-        assert y.shape[-1] == num_classes
+    def test_forward(self):
+        self.model.eval()
+        x = torch.rand([self.batch_size, self.in_channels, self.num_points])
+        y = self.model(x)
+        assert y.shape == self.output_shape
