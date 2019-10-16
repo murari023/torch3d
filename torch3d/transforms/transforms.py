@@ -7,6 +7,7 @@ from . import functional as F
 __all__ = [
     "Compose",
     "First",
+    "Last",
     "ToTensor",
     "Shuffle",
     "RandomDownsample"

@@ -3,8 +3,7 @@ import torch
 
 __all__ = [
     "cdist",
-    "knn",
-    "chamfer"
+    "knn"
 ]
 
 
@@ -18,8 +17,3 @@ def cdist(x, y):
 def knn(x, y, k):
     sqdists = cdist(x, y)
     return torch.topk(sqdists, k, dim=2, largest=False)
-
-
-def chamfer(x, y):
-    sqdists = cdist(x, y)
-    return sqdists.min(1), sqdists.min(2)
