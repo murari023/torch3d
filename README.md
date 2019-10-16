@@ -1,6 +1,8 @@
 torch3d
 =======
 
+[![Downloads](https://pepy.tech/badge/torch3d)](https://pepy.tech/project/torch3d)
+
 The torch3d package consists of datasets, model architectures, and common
 operations for 3D deep learning.
 
