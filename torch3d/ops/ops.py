@@ -1,7 +1,11 @@
 import torch
 
 
-__all__ = ["cdist", "knn", "chamfer"]
+__all__ = [
+    "cdist",
+    "knn",
+    "chamfer"
+]
 
 
 def cdist(x, y):
@@ -18,4 +22,4 @@ def knn(x, y, k):
 
 def chamfer(x, y):
     sqdists = cdist(x, y)
-    return torch.mean(sqdists.min(1)[0]) + torch.mean(sqdists.min(2)[0])
+    return sqdists.min(1), sqdists.min(2)

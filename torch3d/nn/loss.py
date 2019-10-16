@@ -14,4 +14,5 @@ class ChamferLoss(nn.Module):
     def forward(x, y):
         if self.transform is not None:
             x, y = self.transform(x, y)
-        return ops.chamfer(x, y)
+        xy, yx = ops.chamfer(x, y)
+        return torch.mean(xy[0]) + torch.mean(yx[0])
