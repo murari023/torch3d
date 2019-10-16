@@ -101,7 +101,8 @@ class ModelNet40(Dataset):
             self.targets.append(np.array(h5["label"][:]))
             h5.close()
         self.dataset = np.concatenate(self.dataset, axis=0)
-        self.targets = np.concatenate(self.targets, axis=0).squeeze()
+        self.targets = np.concatenate(self.targets, axis=0)
+        self.targets = np.squeeze(self.targets).astype(np.int64)
 
     def __len__(self):
         return len(self.dataset)

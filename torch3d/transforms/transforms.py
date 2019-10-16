@@ -6,6 +6,7 @@ from . import functional as F
 
 __all__ = [
     "ToTensor",
+    "First",
     "Shuffle",
     "RandomDownsample"
 ]
@@ -14,6 +15,15 @@ __all__ = [
 class Compose(object):
     def __call__(self, *args):
         pass
+
+
+class First(object):
+    def __init__(self, transform):
+        self.transform = transform
+
+    def __call__(self, x, *args):
+        x = self.transform(x)
+        return (x,) + args
 
 
 class ToTensor(object):

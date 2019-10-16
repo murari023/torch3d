@@ -94,6 +94,7 @@ class S3DIS(Dataset):
             indices = list(set(range(len(rooms))) - set(indices))
         self.dataset = self.dataset[indices]
         self.targets = self.targets[indices]
+        self.targets = self.targets.astype(np.int64)
 
     def __len__(self):
         return len(self.dataset)

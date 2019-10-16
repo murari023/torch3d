@@ -11,7 +11,7 @@ requirements = [
 ]
 ext_modules = []
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 url = "https://github.com/pqhieu/torch3d"
 
 setup(
