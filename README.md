@@ -43,7 +43,7 @@ Roadmap
 
 **0.2.0**
 - [ ] PointNet++ model
-- [ ] Functional transformations
+- [X] Functional transformations
 - [X] Datasets: ShapeNetPart
 
 **0.1.0**

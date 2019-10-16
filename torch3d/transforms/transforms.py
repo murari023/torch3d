@@ -27,9 +27,18 @@ class First(object):
     def __init__(self, transform):
         self.transform = transform
 
-    def __call__(self, x, *args):
-        x = self.transform(x)
-        return (x,) + args
+    def __call__(self, *args):
+        x = self.transform(args[0])
+        return (x,) + args[1:]
+
+
+class Last(object):
+    def __init__(self, transform):
+        self.transform = transform
+
+    def __call__(self, *args):
+        x = self.transform(args[-1])
+        return args[:-1] + (x,)
 
 
 class ToTensor(object):
