@@ -42,6 +42,14 @@ class Last(object):
         return args[:-1] + (x,)
 
 
+class Map(object):
+    def __init__(self, transform):
+        self.transform = transform
+
+    def __call__(self, *args):
+        return map(self.transform, args)
+
+
 class ToTensor(object):
     def __call__(self, pcd):
         return F.to_tensor(pcd)
