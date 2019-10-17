@@ -1,7 +1,7 @@
 import random
 import torch
 import numpy as np
-from . import functional as F
+import torch3d.transforms.functional as F
 
 
 __all__ = [

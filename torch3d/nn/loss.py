@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-from . import functional as F
+import torch3d.nn.functional as F
 
 
 __all__ = ["ChamferLoss"]
