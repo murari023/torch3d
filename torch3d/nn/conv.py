@@ -43,7 +43,7 @@ class XConv(nn.Module):
         batch_size = p.shape[0]
         _, indices = F.knn(q, p, self.kernel_size * self.dilation)
         indices = indices[..., ::self.dilation]
-        p = self._gather_nd(p, indices)
+        p = F.gather_nd(p, indices)
         p_hat = p - q.unsqueeze(2)
         p_hat = p_hat.permute(0, 3, 1, 2)
         x_hat = self.mlp(p_hat)
@@ -61,8 +61,3 @@ class XConv(nn.Module):
         x = self.conv(x)
         x = x.squeeze(3)
         return q, x
-
-    def _gather_nd(self, x, indices):
-        x = [x[b, i, :] for b, i in enumerate(torch.unbind(indices, dim=0))]
-        x = torch.stack(x, dim=0)
-        return x

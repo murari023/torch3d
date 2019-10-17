@@ -15,3 +15,5 @@ class Downsample(nn.Module):
     def forward(self, p, x=None):
         if self.mode == "random":
             return F.random_sample(p, x, self.num_samples)
+        elif self.mode == "farthest":
+            return F.farthest_point_sample(p, x, self.num_samples)
