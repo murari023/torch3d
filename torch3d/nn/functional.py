@@ -50,5 +50,6 @@ def farthest_point_sample(p, x, num_samples):
         farthest = torch.max(sqdist, -1)[1]
     p = gather_nd(p, indices)
     if x is not None:
+        x = x.permute(0, 2, 1)
         x = gather_nd(x, indices)
     return p, x

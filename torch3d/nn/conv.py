@@ -50,7 +50,7 @@ class XConv(nn.Module):
         x_hat = x_hat.permute(0, 2, 3, 1)
         if x is not None:
             x = x.permute(0, 2, 1)
-            x = self._gather_nd(x, indices)
+            x = F.gather_nd(x, indices)
             x_hat = torch.cat([x_hat, x], dim=-1)
         T = self.stn(p_hat)
         T = T.view(batch_size, self.kernel_size, self.kernel_size, -1)
