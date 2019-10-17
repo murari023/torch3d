@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+import torch3d.nn.functional as F
 
 
 __all__ = ["Downsample"]
@@ -12,8 +13,5 @@ class Downsample(nn.Module):
         self.mode = mode
 
     def forward(self, p, x=None):
-        num_points = p.shape[2]
         if self.mode == "random":
-            choice = torch.randperm(num_points)[:self.num_samples]
-            q = p[:, :, choice]
-            return q, x
+            return F.random_sample(p, x, self.num_samples)

@@ -5,8 +5,7 @@ from .metric import Metric
 class Accuracy(Metric):
     name = "accuracy"
 
-    def __init__(self, num_classes, transform=None):
-        self.transform = transform
+    def __init__(self, num_classes):
         self.num_classes = num_classes
         self.reset()
 
@@ -14,18 +13,15 @@ class Accuracy(Metric):
         self.count = torch.zeros(self.num_classes)
         self.total = torch.zeros(self.num_classes)
 
-    def update(self, output, target):
-        if self.transform is not None:
-            output, target = self.transform(output, target)
-        target = target.view(-1)
-        pred = torch.argmax(output, dim=1).view(-1)
+    def update(self, x, y):
+        x = torch.argmax(x, dim=1).view(-1)
+        y = y.view(-1)
         for k in range(self.num_classes):
-            indices = (target == k)
-            correct = torch.eq(pred[indices], target[indices])
-            correct = correct.type(torch.float32)
+            indices = (y == k)
+            correct = torch.eq(x[indices], y[indices]).type(torch.float32)
             self.count[k] += torch.sum(correct)
             self.total[k] += torch.sum(indices)
 
     def score(self):
-        val = torch.sum(self.count) / torch.sum(self.total)
-        return val.item()
+        value = torch.sum(self.count) / torch.sum(self.total)
+        return value.item()

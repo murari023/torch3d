@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-import torch3d.ops as ops
+import torch3d.nn.functional as F
 
 
 __all__ = ["XConv"]
@@ -41,10 +41,7 @@ class XConv(nn.Module):
 
     def forward(self, p, q, x=None):
         batch_size = p.shape[0]
-        # Find k-nearest neighbors
-        p = p.permute(0, 2, 1)
-        q = q.permute(0, 2, 1)
-        _, indices = ops.knn(q, p, self.kernel_size * self.dilation)
+        _, indices = F.knn(q, p, self.kernel_size * self.dilation)
         indices = indices[..., ::self.dilation]
         p = self._gather_nd(p, indices)
         p_hat = p - q.unsqueeze(2)
@@ -63,10 +60,9 @@ class XConv(nn.Module):
         x = x.permute(0, 3, 1, 2)
         x = self.conv(x)
         x = x.squeeze(3)
-        q = q.permute(0, 2, 1)
         return q, x
 
-    def _gather_nd(self, x, index):
-        x = [x[b, i, :] for b, i in enumerate(torch.unbind(index, dim=0))]
+    def _gather_nd(self, x, indices):
+        x = [x[b, i, :] for b, i in enumerate(torch.unbind(indices, dim=0))]
         x = torch.stack(x, dim=0)
         return x
