@@ -53,3 +53,7 @@ class Jitter(object):
     def __call__(self, points, target):
         points = F.jitter(points, self.sigma)
         return points, target
+
+
+class RandomRotate(object):
+    pass
