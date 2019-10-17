@@ -28,3 +28,14 @@ def to_tensor(pcd):
 
     pcd = torch.tensor(pcd.transpose((1, 0)))
     return pcd
+
+
+def jitter(pcd):
+    if not _is_numpy(pcd):
+        raise TypeError("pcd should be an ndarray. Got {}.".format(type(pcd)))
+
+    if not _is_numpy_pcd(pcd):
+        raise ValueError("pcd should be 2 dimensional. Got {} dimensions.".format(pcd.ndim))
+
+    noise = np.random.rand(*pcd.shape)
+    return pcd + noise

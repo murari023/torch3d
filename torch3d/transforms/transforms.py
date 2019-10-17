@@ -8,7 +8,8 @@ __all__ = [
     "Compose",
     "ToTensor",
     "Shuffle",
-    "RandomSample"
+    "RandomSample",
+    "Jitter"
 ]
 
 
@@ -43,3 +44,12 @@ class RandomSample(object):
         n = pcd.shape[0]
         samples = random.sample(range(n), num_samples)
         return points[samples], target
+
+
+class Jitter(object):
+    def __init__(self, sigma):
+        self.sigma = sigma
+
+    def __call__(self, points, target):
+        points = F.jitter(points, self.sigma)
+        return points, target

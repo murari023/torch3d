@@ -43,7 +43,7 @@ Roadmap
 
 **0.2.0**
 - [ ] PointNet++ model
-- [X] Functional transformations
+- [ ] Transforms: jitter, random rotation
 - [X] Datasets: ShapeNetPart
 
 **0.1.0**
