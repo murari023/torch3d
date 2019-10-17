@@ -26,6 +26,9 @@ def chamfer_loss(x, y):
 
 def random_sample(p, x, num_samples):
     num_points = p.shape[1]
+    if num_samples > num_points:
+        raise ValueError("num_samples should be less than input size.")
+
     indices = torch.randperm(num_points)[:num_samples]
     p = p[:, indices]
     if x is not None:
