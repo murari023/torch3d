@@ -31,7 +31,7 @@ class ToTensor(object):
 
 class Shuffle(object):
     def __call__(self, points, target):
-        n = pcd.shape[0]
+        n = points.shape[0]
         perm = np.random.permutation(n)
         return points[perm], target
 
@@ -41,8 +41,8 @@ class RandomSample(object):
         self.num_samples = num_samples
 
     def __call__(self, points, target):
-        n = pcd.shape[0]
-        samples = random.sample(range(n), num_samples)
+        n = points.shape[0]
+        samples = random.sample(range(n), self.num_samples)
         return points[samples], target
 
 

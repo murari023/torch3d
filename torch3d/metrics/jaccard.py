@@ -16,7 +16,7 @@ class Jaccard(Metric):
 
     def update(self, x, y):
         x = torch.argmax(x, dim=1).view(-1)
-        y = target.view(-1)
+        y = y.view(-1)
         for k in range(self.num_classes):
             a = (x == k)
             b = (y == k)

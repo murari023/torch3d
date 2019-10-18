@@ -24,7 +24,7 @@ def chamfer_loss(x, y):
     return torch.mean(sqdist.min(1)[0]) + torch.mean(sqdist.min(2)[0])
 
 
-def random_sample(p, x, num_samples):
+def random_point_sample(p, x, num_samples):
     num_points = p.shape[1]
     if num_samples > num_points:
         raise ValueError("num_samples should be less than input size.")

@@ -3,7 +3,6 @@ import numpy as np
 import torch3d.transforms as transforms
 
 
-
 class TestTransforms:
     num_points = 2048
     in_channels = 3
