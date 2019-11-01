@@ -14,6 +14,11 @@ class Downsample(nn.Module):
 
     def forward(self, p, x=None):
         if self.mode == "random":
-            return F.random_point_sample(p, x, self.num_samples)
+            indices = F.random_point_sample(p, self.num_samples)
         elif self.mode == "farthest":
-            return F.farthest_point_sample(p, x, self.num_samples)
+            indices = F.farthest_point_sample(p, self.num_samples)
+
+        if x is not None:
+            x = x[:, :, indices]
+        p = p[:, indices]
+        return p, x
