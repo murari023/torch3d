@@ -12,25 +12,25 @@ class PointCNN(nn.Module):
         self.in_channels = in_channels
         self.num_classes = num_classes
         self.down1 = FarthestPointSample(2048)
-        self.conv1 = XConv(in_channels, 256, 8, dilation=1)
         self.down2 = FarthestPointSample(768)
-        self.conv2 = XConv(256, 256, 12, dilation=2)
         self.down3 = FarthestPointSample(384)
-        self.conv3 = XConv(256, 512, 16, dilation=2)
         self.down4 = FarthestPointSample(128)
-        self.conv4 = XConv(512, 1024, 16, dilation=4)
-        self.conv5 = XConv(1024, 512, 16, dilation=6)
-        self.conv6 = XConv(512, 256, 12, dilation=4)
-        self.conv7 = XConv(256, 256, 8, dilation=4)
+        self.conv1 = XConv(self.in_channels, 256, 8, dilation=1, bias=False)
+        self.conv2 = XConv(256, 256, 12, dilation=2, bias=False)
+        self.conv3 = XConv(256, 512, 16, dilation=2, bias=False)
+        self.conv4 = XConv(512, 1024, 16, dilation=4, bias=False)
+        self.conv5 = XConv(1024, 512, 16, dilation=6, bias=False)
+        self.conv6 = XConv(512, 256, 12, dilation=4, bias=False)
+        self.conv7 = XConv(256, 256, 8, dilation=4, bias=False)
         self.mlp = nn.Sequential(
-            nn.Conv1d(256, 256, 1),
+            nn.Conv1d(256, 256, 1, bias=False),
             nn.BatchNorm1d(256),
             nn.ReLU(True),
-            nn.Conv1d(256, 256, 1),
+            nn.Conv1d(256, 256, 1, bias=False),
             nn.BatchNorm1d(256),
             nn.ReLU(True),
         )
-        self.fc = nn.Conv1d(256, num_classes, 1)
+        self.fc = nn.Conv1d(256, self.num_classes, 1)
 
     def forward(self, p, x=None):
         q1, _ = self.down1(p)

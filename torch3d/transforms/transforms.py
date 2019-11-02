@@ -34,7 +34,7 @@ class ToTensor(object):
 
 class Shuffle(object):
     def __init__(self, synchronized=False):
-        self.synchronized = True
+        self.synchronized = synchronized
 
     def __call__(self, points, target):
         perm = np.random.permutation(len(points))
