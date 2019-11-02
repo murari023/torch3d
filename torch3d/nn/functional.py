@@ -9,18 +9,13 @@ def cdist(x, y):
     return sqdist
 
 
-def batched_index_select(x, dim, index):
-    views = [x.shape[0]] + [1 if i != dim else -1 for i in range(1, len(x.shape))]
-    expanse = list(x.shape)
-    expanse[0] = -1
-    expanse[dim] = -1
-    index = index.view(views).expand(expanse)
-    return torch.gather(x, dim, index)
+def knn(p, q, k):
+    sqdist = cdist(p, q)
+    return torch.topk(sqdist, k, dim=1, largest=False)
 
 
-def knn(q, p, k):
-    sqdist = cdist(q, p)
-    return torch.topk(sqdist, k, dim=2, largest=False)
+def ball_point(p, q, radius, k=None):
+    pass
 
 
 def chamfer_loss(x, y):

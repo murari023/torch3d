@@ -43,18 +43,16 @@ class XConv(nn.Module):
 
     def forward(self, p, q, x=None):
         batch_size = p.shape[0]
-        _, indices = F.knn(q, p, self.kernel_size * self.dilation)
+        _, indices = F.knn(p, q, self.kernel_size * self.dilation)
         indices = indices[..., ::self.dilation]
-        p = F.batched_index_select(p, 1, indices)
-        p = p.view(indices.shape[0], indices.shape[1], indices.shape[2], -1)
+        p = torch.stack([p[b, i, :] for b, i in enumerate(indices)], dim=0)
         p_hat = p - q.unsqueeze(2)
         p_hat = p_hat.permute(0, 3, 1, 2)
         x_hat = self.mlp(p_hat)
         x_hat = x_hat.permute(0, 2, 3, 1)
         if x is not None:
             x = x.permute(0, 2, 1)
-            x = F.batched_index_select(x, 1, indices)
-            x = x.view(indices.shape[0], indices.shape[1], indices.shape[2], -1)
+            x = torch.stack([x[b, i, :] for b, i in enumerate(indices)], dim=0)
             x_hat = torch.cat([x_hat, x], dim=-1)
         T = self.stn(p_hat)
         T = T.view(batch_size, self.kernel_size, self.kernel_size, -1)

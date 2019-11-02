@@ -30,6 +30,6 @@ class FarthestPointSample(nn.Module):
     def forward(self, p, x=None):
         indices = F.farthest_point_sample(p, self.num_samples)
         if x is not None:
-            x = F.batched_index_select(x, -1, indices)
-        p = F.batched_index_select(p, 1, indices)
+            x = torch.stack([x[b, :, i] for b, i in enumerate(indices)], dim=0)
+        p = torch.stack([p[b, i, :] for b, i in enumerate(indices)], dim=0)
         return p, x
