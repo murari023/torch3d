@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-from torch3d.nn import XConv, Downsample
+from torch3d.nn import XConv, RandomPointSample
 
 
 __all__ = ["PointCNN"]
@@ -9,13 +9,13 @@ __all__ = ["PointCNN"]
 class PointCNN(nn.Module):
     def __init__(self, in_channels, num_classes):
         super(PointCNN, self).__init__()
-        self.down1 = Downsample(1024, mode="random")
+        self.down1 = RandomPointSample(1024)
         self.conv1 = XConv(in_channels, 48, 8, dilation=1)
-        self.down2 = Downsample(384, mode="random")
+        self.down2 = RandomPointSample(384)
         self.conv2 = XConv(48, 96, 12, dilation=2)
-        self.down3 = Downsample(128, mode="random")
+        self.down3 = RandomPointSample(128)
         self.conv3 = XConv(96, 192, 16, dilation=2)
-        self.down4 = Downsample(128, mode="random")
+        self.down4 = RandomPointSample(128)
         self.conv4 = XConv(192, 384, 16, dilation=3)
         self.mlp = nn.Sequential(
             nn.Conv1d(384, 256, 1),

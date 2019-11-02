@@ -9,10 +9,13 @@ def cdist(x, y):
     return sqdist
 
 
-def gather_nd(x, indices):
-    x = [x[b, i, :] for b, i in enumerate(torch.unbind(indices, dim=0))]
-    x = torch.stack(x, dim=0)
-    return x
+def batched_index_select(x, dim, index):
+    views = [x.shape[0]] + [1 if i != dim else -1 for i in range(1, len(x.shape))]
+    expanse = list(x.shape)
+    expanse[0] = -1
+    expanse[dim] = -1
+    index = index.view(views).expand(expanse)
+    return torch.gather(x, dim, index)
 
 
 def knn(q, p, k):
