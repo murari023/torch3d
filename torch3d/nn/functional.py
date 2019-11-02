@@ -10,8 +10,8 @@ def cdist(x, y):
 
 
 def knn(p, q, k):
-    sqdist = cdist(p, q)
-    return torch.topk(sqdist, k, dim=1, largest=False)
+    sqdist = cdist(q, p)
+    return torch.topk(sqdist, k, dim=-1, largest=False)
 
 
 def ball_point(p, q, radius, k=None):
