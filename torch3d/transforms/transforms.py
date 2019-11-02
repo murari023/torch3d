@@ -1,64 +1,69 @@
-import random
 import torch
 import numpy as np
-import torch3d.transforms.functional as F
 
 
-__all__ = [
-    "Compose",
-    "ToTensor",
-    "Shuffle",
-    "RandomSample",
-    "Jitter"
-]
+def _is_numpy(pcd):
+    return isinstance(pcd, np.ndarray)
 
 
-class Compose(object):
-    def __init__(self, transforms):
-        self.transforms = transforms
-
-    def __call__(self, points, target):
-        for t in self.transforms:
-            points, target = t(points, target)
-        return points, target
+def _is_tensor(tensor):
+    return isinstance(tensor, torch.Tensor)
 
 
-class ToTensor(object):
-    def __init__(self, synchronized=False):
-        self.synchronized = synchronized
-
-    def __call__(self, points, target):
-        points = F.to_tensor(points)
-        return points, target
+def _is_numpy_pcd(pcd):
+    return pcd.ndim == 2
 
 
-class Shuffle(object):
-    def __init__(self, synchronized=False):
-        self.synchronized = synchronized
+def to_tensor(pcd):
+    """
+    Convert a ``numpy.ndarray`` point cloud to `Tensor`.
 
-    def __call__(self, points, target):
-        perm = np.random.permutation(len(points))
-        if self.synchronized:
-            return points[perm], target[perm]
-        return points[perm], target
+    """
 
+    if not _is_numpy(pcd):
+        raise TypeError("pcd should be an ndarray. Got {}.".format(type(pcd)))
 
-class RandomSample(object):
-    def __init__(self, num_samples, synchronized=False):
-        self.num_samples = num_samples
-        self.synchronized = synchronized
+    if not _is_numpy_pcd(pcd):
+        raise ValueError("pcd should be 2 dimensional. Got {} dimensions.".format(pcd.ndim))
 
-    def __call__(self, points, target):
-        samples = random.sample(range(len(points)), self.num_samples)
-        if self.synchronized:
-            return points[samples], target[samples]
-        return points[samples], target
+    pcd = torch.tensor(pcd.transpose((1, 0)))
+    return pcd
 
 
-class Jitter(object):
-    def __init__(self, sigma):
-        self.sigma = sigma
+def jitter(pcd):
+    if not _is_numpy(pcd):
+        raise TypeError("pcd should be an ndarray. Got {}.".format(type(pcd)))
 
-    def __call__(self, points, target):
-        points = F.jitter(points, self.sigma)
-        return points, target
+    if not _is_numpy_pcd(pcd):
+        raise ValueError("pcd should be 2 dimensional. Got {} dimensions.".format(pcd.ndim))
+
+    noise = np.random.rand(*pcd.shape)
+    return pcd + noise
+
+
+def random_sample(pcd, num_samples):
+    if not _is_numpy(pcd):
+        raise TypeError("pcd should be an ndarray. Got {}.".format(type(pcd)))
+
+    if not _is_numpy_pcd(pcd):
+        raise ValueError("pcd should be 2 dimensional. Got {} dimensions.".format(pcd.ndim))
+
+    n = pcd.shape[0]
+    if n >= num_samples:
+        samples = np.random.choice(n, num_samples, replace=False)
+    else:
+        m = num_samples - n
+        samples = np.random.choice(n, m, replace=True)
+        samples = list(range(n)) + list(samples)
+    return samples
+
+
+def shuffle(pcd):
+    if not _is_numpy(pcd):
+        raise TypeError("pcd should be an ndarray. Got {}.".format(type(pcd)))
+
+    if not _is_numpy_pcd(pcd):
+        raise ValueError("pcd should be 2 dimensional. Got {} dimensions.".format(pcd.ndim))
+
+    n = pcd.shape[0]
+    return np.random.permutation(n)
