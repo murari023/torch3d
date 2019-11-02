@@ -41,9 +41,9 @@ class PointCNN(nn.Module):
         p3, x = self.conv3(p2, q3, x)
         q4, _ = self.down4(p3)
         p4, x = self.conv4(p3, q4, x)
-        p3, x = self.conv5(p4, p3, x)
-        p2, x = self.conv6(p3, p2, x)
-        p1, x = self.conv7(p2, p1, x)
+        p3, x = self.conv5(p4, q3, x)
+        p2, x = self.conv6(p3, q2, x)
+        p1, x = self.conv7(p2, q1, x)
         x = self.mlp(x)
         x = self.fc(x)
         return x

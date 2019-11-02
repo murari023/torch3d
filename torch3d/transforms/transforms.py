@@ -24,25 +24,34 @@ class Compose(object):
 
 
 class ToTensor(object):
+    def __init__(self, synchronized=False):
+        self.synchronized = synchronized
+
     def __call__(self, points, target):
         points = F.to_tensor(points)
         return points, target
 
 
 class Shuffle(object):
+    def __init__(self, synchronized=False):
+        self.synchronized = True
+
     def __call__(self, points, target):
-        n = points.shape[0]
-        perm = np.random.permutation(n)
+        perm = np.random.permutation(len(points))
+        if self.synchronized:
+            return points[perm], target[perm]
         return points[perm], target
 
 
 class RandomSample(object):
-    def __init__(self, num_samples):
+    def __init__(self, num_samples, synchronized=False):
         self.num_samples = num_samples
+        self.synchronized = synchronized
 
     def __call__(self, points, target):
-        n = points.shape[0]
-        samples = random.sample(range(n), self.num_samples)
+        samples = random.sample(range(len(points)), self.num_samples)
+        if self.synchronized:
+            return points[samples], target[samples]
         return points[samples], target
 
 
@@ -53,7 +62,3 @@ class Jitter(object):
     def __call__(self, points, target):
         points = F.jitter(points, self.sigma)
         return points, target
-
-
-class RandomRotate(object):
-    pass

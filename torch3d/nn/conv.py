@@ -41,7 +41,6 @@ class XConv(nn.Module):
 
     def forward(self, p, q, x=None):
         batch_size = p.shape[0]
-        num_points = p.shape[1]
         _, indices = F.knn(q, p, self.kernel_size * self.dilation)
         indices = indices[..., ::self.dilation]
         p = F.batched_index_select(p, 1, indices)
