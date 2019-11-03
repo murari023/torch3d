@@ -1,5 +1,6 @@
 import torch
 from torch3d.extension import _lazy_import
+from .ops import *
 
 
 def cdist(x, y):
@@ -37,3 +38,6 @@ def farthest_point_sample(p, num_samples):
         raise ValueError("num_samples should be less than input size.")
     _C = _lazy_import()
     return _C.farthest_point_sample(p, num_samples)
+
+
+gather1d = Gather1dFunction.apply
