@@ -1,3 +1,4 @@
+import os
 import glob
 from setuptools import setup, find_packages
 from torch.utils.cpp_extension import BuildExtension, CUDAExtension, CUDA_HOME
@@ -12,16 +13,10 @@ requirements = [
 
 ext_modules = []
 if CUDA_HOME is not None:
-    ext_modules += [
-        CUDAExtension(
-            name="torch3d._C",
-            sources=[
-                "torch3d/csrc/api.cpp",
-                "torch3d/csrc/cuda/sample.cu",
-                "torch3d/csrc/cuda/ball_point.cu"
-            ]
-        )
-    ]
+    sources = []
+    sources += glob.glob(os.path.join("torch3d", "csrc", "*.cpp"))
+    sources += glob.glob(os.path.join("torch3d", "csrc", "cuda", "*.cu"))
+    ext_modules += [CUDAExtension("torch3d._C", sources)]
 
 __version__ = "0.2.0"
 url = "https://github.com/pqhieu/torch3d"
