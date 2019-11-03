@@ -37,7 +37,7 @@ class PointNet(nn.Module):
             nn.ReLU(True),
             nn.Dropout(0.2)
         )
-        self.fc = nn.Linear(256, num_classes)
+        self.fc = nn.Linear(256, self.num_classes)
 
     def forward(self, x):
         x = self.mlp1(x)
