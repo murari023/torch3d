@@ -38,3 +38,8 @@ class PointNetSSG(nn.Module):
         x = self.mlp(x)
         x = self.fc(x)
         return x
+
+
+class PointNetMSG(nn.Module):
+    def __init__(self, in_channels, num_classes):
+        pass

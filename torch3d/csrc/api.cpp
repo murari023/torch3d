@@ -1,6 +1,5 @@
 #include "api.h"
-#include "cuda/sample.h"
-#include "cuda/ball_point.h"
+#include "cuda/cuda.h"
 
 #define CHECK_CONTIGUOUS(x) TORCH_CHECK(x.is_contiguous(), #x, " must be contiguous")
 

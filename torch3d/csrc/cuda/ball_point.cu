@@ -1,5 +1,4 @@
-#include "ball_point.h"
-#include <ATen/cuda/CUDAContext.h>
+#include "cuda.h"
 
 
 constexpr int num_threads = 256;
