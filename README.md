@@ -42,10 +42,10 @@ Roadmap
 -------
 
 **0.2.0**
-- [ ] PointNet++ model
-- [ ] Transforms: jitter, random rotation
-- [X] Datasets: ShapeNetPart
+- [x] PointNet++ model
+- [x] Transforms: jitter
+- [x] Datasets: ShapeNetPart
 
 **0.1.0**
-- [X] PointCNN model
-- [X] Publish on PyPi
+- [x] PointCNN model
+- [x] Publish on PyPi
