@@ -22,8 +22,8 @@ __global__ void farthest_point_sample_kernel(
     const T* __restrict__ points,
     int batch_size,
     int num_points,
-    int channels,
     int num_samples,
+    int channels,
     T* __restrict__ sqdists,
     int64_t* __restrict__ indices)
 {
@@ -45,11 +45,10 @@ __global__ void farthest_point_sample_kernel(
     for (int64_t i = 1; i < num_samples; ++i) {
         int argmax = 0;
         T max_dist = 0;
-
         for (int64_t k = tid; k < num_points; k += num_threads) {
             T dist = 0;
             for (int64_t c = 0; c < channels; ++c) {
-                T d = points[k * 3 + c] - points[prev * 3 + c];
+                T d = points[k * channels + c] - points[prev * channels + c];
                 dist += d * d;
             }
             dist = min(dist, sqdists[k]);
@@ -139,8 +138,8 @@ at::Tensor farthest_point_sample_cuda(at::Tensor points, int num_samples)
             points.data<scalar_t>(),
             batch_size,
             num_points,
-            channels,
             num_samples,
+            channels,
             sqdists.data<scalar_t>(),
             indices.data<int64_t>());
     });

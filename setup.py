@@ -17,7 +17,8 @@ if CUDA_HOME is not None:
             name="torch3d._C",
             sources=[
                 "torch3d/csrc/api.cpp",
-                "torch3d/csrc/cuda/sample.cu"
+                "torch3d/csrc/cuda/sample.cu",
+                "torch3d/csrc/cuda/ball_point.cu"
             ]
         )
     ]
