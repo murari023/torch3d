@@ -1,12 +1,12 @@
-torch3d
+Torch3d
 =======
 
 [![Downloads](https://pepy.tech/badge/torch3d)](https://pepy.tech/project/torch3d)
 
-The torch3d package consists of datasets, model architectures, and common
+The Torch3d package consists of datasets, model architectures, and common
 operations for 3D deep learning.
 
-Why torch3d?
+Why Torch3d?
 ------------
 
 For 3D domain, there is currently no official support from PyTorch that likes
@@ -17,6 +17,7 @@ point clouds.
 
 The following network architectures are currently included:
 - **PointNet** from Qi et al. (CVPR 2017) [[arXiv](https://arxiv.org/abs/1612.00593)]
+- **PoinNet++** from Qi et al. (NeurIPS 2017) [[arXiv](https://arxiv.org/abs/1706.02413)]
 - **PointCNN** from Li et al. (NeurIPS 2018) [[arXiv](https://arxiv.org/abs/1801.07791)]
 
 Installation
