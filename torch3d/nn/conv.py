@@ -69,14 +69,15 @@ class XConv(nn.Module):
 
 
 class SetAbstraction(nn.Module):
-    def __init__(self, mlp, radius=None, k=None):
+    def __init__(self, mlp, radius=None, k=None, bias=True):
         super(SetAbstraction, self).__init__()
         self.radius = radius
         self.k = k
+        self.bias = bias
         modules = []
         last_channels = mlp[0]
         for channels in mlp[1:]:
-            modules.append(nn.Conv2d(last_channels, channels, 1, bias=False))
+            modules.append(nn.Conv2d(last_channels, channels, 1, bias=self.bias))
             modules.append(nn.BatchNorm2d(channels))
             modules.append(nn.ReLU(True))
             last_channels = channels
