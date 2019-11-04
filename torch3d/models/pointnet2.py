@@ -13,9 +13,9 @@ class PointNetSSG(nn.Module):
         self.num_classes = num_classes
         self.down1 = FarthestPointSample(512)
         self.down2 = FarthestPointSample(128)
-        self.sa1 = SetAbstraction([self.in_channels + 3, 64, 64, 128], 0.2, 32, bias=False)
-        self.sa2 = SetAbstraction([128 + 3, 128, 128, 256], 0.4, 64, bias=False)
-        self.sa3 = SetAbstraction([256 + 3, 256, 512, 1024], None, 128, bias=False)
+        self.sa1 = SetAbstraction(self.in_channels + 3, [64, 64, 128], 0.2, 32, bias=False)
+        self.sa2 = SetAbstraction(128 + 3, [128, 128, 256], 0.4, 64, bias=False)
+        self.sa3 = SetAbstraction(256 + 3, [256, 512, 1024], None, 128, bias=False)
         self.mlp = nn.Sequential(
             nn.Linear(1024, 512, bias=False),
             nn.BatchNorm1d(512),

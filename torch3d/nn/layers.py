@@ -5,7 +5,8 @@ import torch3d.nn.functional as F
 
 __all__ = [
     "XConv",
-    "SetAbstraction"
+    "SetAbstraction",
+    "FeaturePropagation"
 ]
 
 
@@ -69,14 +70,15 @@ class XConv(nn.Module):
 
 
 class SetAbstraction(nn.Module):
-    def __init__(self, mlp, radius=None, k=None, bias=True):
+    def __init__(self, in_channels, mlp, radius=None, k=None, bias=True):
         super(SetAbstraction, self).__init__()
+        self.in_channels = in_channels
         self.radius = radius
         self.k = k
         self.bias = bias
         modules = []
-        last_channels = mlp[0]
-        for channels in mlp[1:]:
+        last_channels = self.in_channels
+        for channels in mlp:
             modules.append(nn.Conv2d(last_channels, channels, 1, bias=self.bias))
             modules.append(nn.BatchNorm2d(channels))
             modules.append(nn.ReLU(True))
@@ -102,4 +104,29 @@ class SetAbstraction(nn.Module):
         x = x_hat.permute(0, 3, 1, 2)
         x = self.mlp(x)
         x = self.maxpool(x).squeeze(3)
+        return q, x
+
+
+class FeaturePropagation(nn.Module):
+    def __init__(self, in_channels, mlp, bias=True):
+        super(FeaturePropagation, self).__init__()
+        self.in_channels = in_channels
+        self.bias = bias
+        modules = []
+        last_channels = self.in_channels
+        for channels in mlp:
+            modules.append(nn.Conv1d(last_channels, channels, 1, bias=self.bias))
+            modules.append(nn.BatchNorm1d(channels))
+            modules.append(nn.ReLU(True))
+            last_channels = channels
+        self.mlp = nn.Sequential(*modules)
+
+    def forward(self, p, q, x, y=None):
+        sqdist, indices = F.knn(p, q, 3)
+        sqdist[sqdist < 1e-10] = 1e-10
+        weight = 1.0 / sqdist
+        weight = weight / torch.sum(weight, dim=-1, keepdim=True)
+        x = torch.stack([x[b, :, i] for b, i in enumerate(indices)], dim=0)
+        x = torch.sum(x * weight.unsqueeze(1), dim=-1)
+        x = self.mlp(x)
         return q, x
