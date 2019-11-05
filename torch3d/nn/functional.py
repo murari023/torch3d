@@ -37,3 +37,33 @@ def farthest_point_sample(p, num_samples):
         raise ValueError("num_samples should be less than input size.")
     _C = _lazy_import()
     return _C.farthest_point_sample(p, num_samples)
+
+
+def gather_points(p, indices):
+    return _GatherPoints.apply(p, indices)
+
+
+def gather_groups(p, indices):
+    batch_size = indices.shape[0]
+    m = indices.shape[1]
+    k = indices.shape[2]
+    indices = indices.view(batch_size, -1)
+    output = _GatherPoints.apply(p, indices)
+    output = output.view(batch_size, m, k, -1)
+    return output
+
+
+class _GatherPoints(torch.autograd.Function):
+    @staticmethod
+    def forward(ctx, points, indices):
+        n = points.shape[1]
+        ctx.for_backwards = (indices, n)
+        _C = _lazy_import()
+        return _C.gather_points(points, indices)
+
+    @staticmethod
+    def backward(ctx, grad):
+        indices, n = ctx.for_backwards
+        _C = _lazy_import()
+        output = _C.gather_points_backward(grad, indices, n)
+        return output, None

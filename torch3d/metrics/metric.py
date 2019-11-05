@@ -7,3 +7,6 @@ class Metric(object):
 
     def score(self):
         raise NotImplementedError
+
+    def mean(self):
+        raise NotImplementedError

@@ -1,12 +1,9 @@
 #include "api.h"
 #include "cuda/cuda.h"
 
-#define CHECK_CONTIGUOUS(x) TORCH_CHECK(x.is_contiguous(), #x, " must be contiguous")
-
 
 at::Tensor farthest_point_sample(at::Tensor points, int num_samples)
 {
-    CHECK_CONTIGUOUS(points);
     if (points.type().is_cuda()) {
         return farthest_point_sample_cuda(points, num_samples);
     }
@@ -16,10 +13,26 @@ at::Tensor farthest_point_sample(at::Tensor points, int num_samples)
 
 at::Tensor ball_point(at::Tensor points, at::Tensor queries, float radius, int k)
 {
-    CHECK_CONTIGUOUS(points);
-    CHECK_CONTIGUOUS(queries);
     if (points.type().is_cuda()) {
         return ball_point_cuda(points, queries, radius, k);
+    }
+    AT_ERROR("Not compiled with GPU support");
+}
+
+
+at::Tensor gather_points(at::Tensor points, at::Tensor indices)
+{
+    if (points.type().is_cuda()) {
+        return gather_points_cuda(points, indices);
+    }
+    AT_ERROR("Not compiled with GPU support");
+}
+
+
+at::Tensor gather_points_backward(at::Tensor grad, at::Tensor indices, int n)
+{
+    if (grad.type().is_cuda()) {
+        return gather_points_backward_cuda(grad, indices, n);
     }
     AT_ERROR("Not compiled with GPU support");
 }
@@ -28,4 +41,6 @@ at::Tensor ball_point(at::Tensor points, at::Tensor queries, float radius, int k
 PYBIND11_MODULE(TORCH_EXTENSION_NAME, m) {
     m.def("farthest_point_sample", &farthest_point_sample);
     m.def("ball_point", &ball_point);
+    m.def("gather_points", &gather_points);
+    m.def("gather_points_backward", &gather_points_backward);
 }

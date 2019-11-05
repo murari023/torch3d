@@ -47,7 +47,7 @@ class PointNetSSG(nn.Module):
         p3, x = self.fp1(p4, q3, x)
         p2, x = self.fp2(p3, q2, x)
         p1, x = self.fp3(p2, q1, x)
-        p, x  = self.fp4(p1, p, x)
+        p, x = self.fp4(p1, p, x)
         x = self.mlp(x)
         x = self.fc(x)
         return x

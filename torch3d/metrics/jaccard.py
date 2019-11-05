@@ -26,3 +26,6 @@ class Jaccard(Metric):
     def score(self):
         value = torch.mean(self.inter / self.union)
         return value.item()
+
+    def mean(self):
+        return self.score()

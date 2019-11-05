@@ -25,3 +25,7 @@ class Accuracy(Metric):
     def score(self):
         value = torch.sum(self.count) / torch.sum(self.total)
         return value.item()
+
+    def mean(self):
+        value = torch.mean(self.count / self.total)
+        return value.item()

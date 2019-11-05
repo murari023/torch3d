@@ -62,8 +62,8 @@ at::Tensor ball_point_cuda(at::Tensor points, at::Tensor queries, float radius, 
         dim3 grid(batch_size);
         cudaStream_t stream = at::cuda::getCurrentCUDAStream();
         ball_point_kernel<scalar_t><<<grid, block, 0, stream>>>(
-            points.data<scalar_t>(),
-            queries.data<scalar_t>(),
+            points.contiguous().data<scalar_t>(),
+            queries.contiguous().data<scalar_t>(),
             batch_size,
             num_points,
             num_queries,

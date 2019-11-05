@@ -134,7 +134,7 @@ at::Tensor farthest_point_sample_cuda(at::Tensor points, int num_samples)
         dim3 grid(batch_size);
         cudaStream_t stream = at::cuda::getCurrentCUDAStream();
         farthest_point_sample_kernel<scalar_t><<<grid, block, 0, stream>>>(
-            points.data<scalar_t>(),
+            points.contiguous().data<scalar_t>(),
             batch_size,
             num_points,
             num_samples,
