@@ -1,6 +1,7 @@
 #include "cpu.h"
 
 
+template <typename T>
 void farthest_point_sample_impl(
     const T* points,
     int batch_size,

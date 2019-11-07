@@ -1,7 +1,7 @@
 import os
 import glob
 from setuptools import setup, find_packages
-from torch.utils.cpp_extension import BuildExtension, CUDAExtension, CUDA_HOME
+from torch.utils.cpp_extension import BuildExtension, CppExtension, CUDAExtension, CUDA_HOME
 
 
 requirements = [
@@ -11,14 +11,25 @@ requirements = [
     "torchvision"
 ]
 
+sources = []
 ext_modules = []
+define_macros = []
+extension = CppExtension
+sources += glob.glob(os.path.join("torch3d", "csrc", "cpu", "*.cpp"))
 
 if CUDA_HOME is not None:
     extension = CUDAExtension
-    sources = []
     sources += glob.glob(os.path.join("torch3d", "csrc", "*.cpp"))
     sources += glob.glob(os.path.join("torch3d", "csrc", "cuda", "*.cu"))
-    ext_modules += [extension("torch3d._C", sources)]
+    define_macros += [('WITH_CUDA', None)]
+
+ext_modules += [
+    extension(
+        "torch3d._C",
+        sources,
+        define_macros=define_macros
+    )
+]
 
 __version__ = "0.2.0"
 url = "https://github.com/pqhieu/torch3d"
