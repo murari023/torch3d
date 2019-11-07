@@ -1,5 +1,5 @@
 import os
-import json
+import h5py
 import numpy as np
 from torch.utils.data import Dataset
 from torchvision.datasets.utils import download_and_extract_archive, check_integrity
@@ -12,8 +12,25 @@ class ShapeNetPart(Dataset):
     """
 
     name = "shapenetpart"
-    url = "https://shapenet.cs.stanford.edu/ericyi/shapenetcore_partanno_segmentation_benchmark_v0.zip"
-    basedir = "shapenetcore_partanno_segmentation_benchmark_v0"
+    url = "https://shapenet.cs.stanford.edu/media/shapenet_part_seg_hdf5_data.zip"
+    basedir = "hdf5_data"
+    splits = {
+        "train": [
+            ("ply_data_train0.h5", "e7152ff588ae6c87eb1156823df05855"),
+            ("ply_data_train1.h5", "b4894a082211418b61b5a707fedb4f56"),
+            ("ply_data_train2.h5", "508eeeee96053b90388520c37df3a8b8"),
+            ("ply_data_train3.h5", "88574c3d5c61d0f3156b9e02cd6cda03"),
+            ("ply_data_train4.h5", "418cb01104740bf1353b792331cb5878"),
+            ("ply_data_train5.h5", "26e65c8827b08f7c340cd03f902e27e8")
+        ],
+        "val": [
+            ("ply_data_val0.h5", "628b4b3cbc17765de2114d104e51b9c9")
+        ],
+        "test": [
+            ("ply_data_test0.h5", "fa3fb32b179128ede32c2c948ed83efc"),
+            ("ply_data_test1.h5", "5eb63ae378831c665282c8f22b6c1249")
+        ]
+    }
     cat2synset = {
         "airplane": "02691156",
         "bag": "02773838",
@@ -49,17 +66,25 @@ class ShapeNetPart(Dataset):
         if not self._check_integrity():
             raise RuntimeError("Dataset not found or corrupted.")
 
-        fpath = "shuffled_{}_file_list.json".format(self.split)
-        fpath = os.path.join(self.root, self.name, "train_test_split", fpath)
-        with open(fpath, "r") as fp:
-            flist = json.load(fp)
-            flist = sorted([x.replace("shape_data", self.name) for x in flist])
+        flist = self.splits[split]
 
-        self.dataset = []
-        self.targets = []
+        self.points = []
+        self.labels = []
+        self.parts = []
 
-        for filename in flist:
-            pass
+        for filename, md5 in flist:
+            h5 = h5py.File(os.path.join(self.root, self.name, filename), "r")
+            assert "data" in h5 and "label" in h5 and "pid" in h5
+            self.points.append(np.array(h5["data"][:]))
+            self.labels.append(np.array(h5["label"][:]))
+            self.parts.append(np.array(h5["pid"][:]))
+            h5.close()
+        self.points = np.concatenate(self.points, axis=0)
+        self.labels = np.concatenate(self.labels, axis=0)
+        self.parts = np.concatenate(self.parts, axis=0)
+
+    def __getitem__(self, i):
+        pass
 
     def download(self):
         if not self._check_integrity():
@@ -68,8 +93,9 @@ class ShapeNetPart(Dataset):
                       os.path.join(self.root, self.name))
 
     def _check_integrity(self):
-        for _, d in self.cat2synset.items():
-            fpath = os.path.join(self.root, self.name, d)
-            if not os.path.exists(fpath):
+        flist = self.splits["train"] + self.splits["val"] + self.splits["test"]
+        for filename, md5 in flist:
+            fpath = os.path.join(self.root, self.name, filename)
+            if not check_integrity(fpath, md5):
                 return False
-            return True
+        return True

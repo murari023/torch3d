@@ -121,7 +121,7 @@ __global__ void farthest_point_sample_kernel(
 }
 
 
-at::Tensor farthest_point_sample_cuda(at::Tensor points, int num_samples)
+at::Tensor farthest_point_sample_cuda(const at::Tensor& points, int num_samples)
 {
     int batch_size = points.size(0);
     int num_points = points.size(1);

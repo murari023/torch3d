@@ -1,40 +1,59 @@
 #include "api.h"
+#include "cpu/cpu.h"
+#ifdef WITH_CUDA
 #include "cuda/cuda.h"
+#endif
 
 
-at::Tensor farthest_point_sample(at::Tensor points, int num_samples)
+at::Tensor farthest_point_sample(const at::Tensor& points, int num_samples)
 {
     if (points.type().is_cuda()) {
+#ifdef WITH_CUDA
         return farthest_point_sample_cuda(points, num_samples);
+#else
+        AT_ERROR("Not compiled with GPU support");
+#endif
     }
-    AT_ERROR("Not compiled with GPU support");
+    return farthest_point_sample_cpu(points, num_samples);
 }
 
 
-at::Tensor ball_point(at::Tensor points, at::Tensor queries, float radius, int k)
+at::Tensor ball_point(const at::Tensor& points, const at::Tensor& queries, float radius, int k)
 {
     if (points.type().is_cuda()) {
+#ifdef WITH_CUDA
         return ball_point_cuda(points, queries, radius, k);
+#else
+        AT_ERROR("Not compiled with GPU support");
+#endif
     }
-    AT_ERROR("Not compiled with GPU support");
+    return ball_point_cpu(points, queries, radius, k);
 }
 
 
-at::Tensor gather_points(at::Tensor points, at::Tensor indices)
+at::Tensor gather_points(const at::Tensor& points, const at::Tensor& indices)
 {
     if (points.type().is_cuda()) {
+#ifdef WITH_CUDA
         return gather_points_cuda(points, indices);
+#else
+        AT_ERROR("Not compiled with GPU support");
+#endif
     }
-    AT_ERROR("Not compiled with GPU support");
+    return gather_points_cpu(points, indices);
 }
 
 
-at::Tensor gather_points_backward(at::Tensor grad, at::Tensor indices, int n)
+at::Tensor gather_points_backward(const at::Tensor& grad, const at::Tensor& indices, int n)
 {
     if (grad.type().is_cuda()) {
+#ifdef WITH_CUDA
         return gather_points_backward_cuda(grad, indices, n);
+#else
+        AT_ERROR("Not compiled with GPU support");
+#endif
     }
-    AT_ERROR("Not compiled with GPU support");
+    return gather_points_backward_cpu(grad, indices, n);
 }
 
 

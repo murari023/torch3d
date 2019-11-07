@@ -28,7 +28,7 @@ __global__ void gather_points_kernel(
 }
 
 
-at::Tensor gather_points_cuda(at::Tensor points, at::Tensor indices)
+at::Tensor gather_points_cuda(const at::Tensor& points, const at::Tensor& indices)
 {
     int batch_size = points.size(0);
     int n = points.size(1);
@@ -78,7 +78,7 @@ __global__ void gather_points_backward_kernel(
 }
 
 
-at::Tensor gather_points_backward_cuda(at::Tensor grad, at::Tensor indices, int n)
+at::Tensor gather_points_backward_cuda(const at::Tensor& grad, const at::Tensor& indices, int n)
 {
     int batch_size = grad.size(0);
     int m = grad.size(1);

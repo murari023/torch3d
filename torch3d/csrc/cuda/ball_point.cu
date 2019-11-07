@@ -49,7 +49,7 @@ __global__ void ball_point_kernel(
 }
 
 
-at::Tensor ball_point_cuda(at::Tensor points, at::Tensor queries, float radius, int k)
+at::Tensor ball_point_cuda(const at::Tensor& points, const at::Tensor& queries, float radius, int k)
 {
     int batch_size = points.size(0);
     int num_points = points.size(1);

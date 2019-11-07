@@ -73,17 +73,17 @@ class S3DIS(Dataset):
         if not self._check_integrity():
             raise RuntimeError("Dataset not found or corrupted.")
 
-        self.dataset = []
-        self.targets = []
+        self.points = []
+        self.labels = []
 
         for filename, md5 in self.flist:
             h5 = h5py.File(os.path.join(self.root, self.name, filename), "r")
             assert "data" in h5 and "label" in h5
-            self.dataset.append(np.array(h5["data"][:]))
-            self.targets.append(np.array(h5["label"][:]))
+            self.points.append(np.array(h5["data"][:]))
+            self.labels.append(np.array(h5["label"][:]))
             h5.close()
-        self.dataset = np.concatenate(self.dataset, axis=0)
-        self.targets = np.concatenate(self.targets, axis=0).squeeze()
+        self.points = np.concatenate(self.points, axis=0)
+        self.labels = np.concatenate(self.labels, axis=0).squeeze()
 
         # Filter point cloud not in area of interest
         with open(os.path.join(self.root, self.name, "room_filelist.txt")) as fp:
@@ -92,19 +92,19 @@ class S3DIS(Dataset):
         indices = [i for i, room in enumerate(rooms) if area in room]
         if self.train:
             indices = list(set(range(len(rooms))) - set(indices))
-        self.dataset = self.dataset[indices]
-        self.targets = self.targets[indices]
-        self.targets = self.targets.astype(np.int64)
+        self.points = self.points[indices]
+        self.labels = self.labels[indices]
+        self.labels = self.labels.astype(np.int64)
 
     def __len__(self):
-        return len(self.dataset)
+        return len(self.points)
 
     def __getitem__(self, i):
-        points = self.dataset[i]
-        target = self.targets[i]
+        pcd = self.points[i]
+        label = self.labels[i]
         if self.transform is not None:
-            points, target = self.transform(points, target)
-        return points, target
+            pcd, label = self.transform(pcd, label)
+        return pcd, label
 
     def download(self):
         if not self._check_integrity():

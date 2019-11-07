@@ -12,11 +12,13 @@ requirements = [
 ]
 
 ext_modules = []
+
 if CUDA_HOME is not None:
+    extension = CUDAExtension
     sources = []
     sources += glob.glob(os.path.join("torch3d", "csrc", "*.cpp"))
     sources += glob.glob(os.path.join("torch3d", "csrc", "cuda", "*.cu"))
-    ext_modules += [CUDAExtension("torch3d._C", sources)]
+    ext_modules += [extension("torch3d._C", sources)]
 
 __version__ = "0.2.0"
 url = "https://github.com/pqhieu/torch3d"
