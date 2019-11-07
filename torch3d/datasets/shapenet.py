@@ -82,9 +82,16 @@ class ShapeNetPart(Dataset):
         self.points = np.concatenate(self.points, axis=0)
         self.labels = np.concatenate(self.labels, axis=0)
         self.parts = np.concatenate(self.parts, axis=0)
+        self.labels = np.squeeze(self.labels).astype(np.int64)
+        self.parts = np.astype(np.int64)
 
     def __getitem__(self, i):
-        pass
+        pcd = self.points[i]
+        label = self.labels[i]
+        part = self.parts[i]
+        if self.transform is not None:
+            pcd, label, part = self.transform(pcd, label, part)
+        return pcd, label, part
 
     def download(self):
         if not self._check_integrity():
