@@ -1,6 +1,7 @@
 Torch3d
 =======
 
+[![PyPI](https://img.shields.io/pypi/v/torch3d)](https://pypi.org/project/torch3d)
 [![Downloads](https://pepy.tech/badge/torch3d)](https://pepy.tech/project/torch3d)
 
 The Torch3d package consists of datasets, model architectures, and common
