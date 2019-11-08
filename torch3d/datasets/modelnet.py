@@ -91,28 +91,28 @@ class ModelNet40(Dataset):
         else:
             flist = self.splits["test"]
 
-        self.points = []
+        self.data = []
         self.labels = []
 
         for filename, md5 in flist:
             h5 = h5py.File(os.path.join(self.root, self.name, filename), "r")
             assert "data" in h5 and "label" in h5
-            self.points.append(np.array(h5["data"][:]))
+            self.data.append(np.array(h5["data"][:]))
             self.labels.append(np.array(h5["label"][:]))
             h5.close()
-        self.points = np.concatenate(self.points, axis=0)
+        self.data = np.concatenate(self.data, axis=0)
         self.labels = np.concatenate(self.labels, axis=0)
         self.labels = np.squeeze(self.labels).astype(np.int64)
 
     def __len__(self):
-        return len(self.points)
+        return len(self.data)
 
     def __getitem__(self, i):
-        pcd = self.points[i]
+        points = self.data[i]
         label = self.labels[i]
         if self.transform is not None:
-            pcd, label = self.transform(pcd, label)
-        return pcd, label
+            points, label = self.transform(points, label)
+        return points, label
 
     def download(self):
         if not self._check_integrity():

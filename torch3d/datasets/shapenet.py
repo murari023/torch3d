@@ -68,30 +68,29 @@ class ShapeNetPart(Dataset):
 
         flist = self.splits[split]
 
-        self.points = []
+        self.data = []
         self.labels = []
         self.parts = []
 
         for filename, md5 in flist:
             h5 = h5py.File(os.path.join(self.root, self.name, filename), "r")
             assert "data" in h5 and "label" in h5 and "pid" in h5
-            self.points.append(np.array(h5["data"][:]))
+            self.data.append(np.array(h5["data"][:]))
             self.labels.append(np.array(h5["label"][:]))
             self.parts.append(np.array(h5["pid"][:]))
             h5.close()
-        self.points = np.concatenate(self.points, axis=0)
+        self.data = np.concatenate(self.data, axis=0)
         self.labels = np.concatenate(self.labels, axis=0)
-        self.parts = np.concatenate(self.parts, axis=0)
+        self.parts = np.concatenate(self.parts, axis=0).astype(np.int64)
         self.labels = np.squeeze(self.labels).astype(np.int64)
-        self.parts = np.astype(np.int64)
 
     def __getitem__(self, i):
-        pcd = self.points[i]
+        points = self.data[i]
         label = self.labels[i]
         part = self.parts[i]
         if self.transform is not None:
-            pcd, label, part = self.transform(pcd, label, part)
-        return pcd, label, part
+            points, label, part = self.transform(points, label, part)
+        return points, label, part
 
     def download(self):
         if not self._check_integrity():

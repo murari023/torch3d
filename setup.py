@@ -11,20 +11,18 @@ requirements = [
     "torchvision"
 ]
 
-sources = []
 ext_modules = []
-define_macros = []
-extension = CppExtension
-sources += glob.glob(os.path.join("torch3d", "csrc", "cpu", "*.cpp"))
 
 if CUDA_HOME is not None:
+    sources = []
+    define_macros = []
     extension = CUDAExtension
     sources += glob.glob(os.path.join("torch3d", "csrc", "*.cpp"))
     sources += glob.glob(os.path.join("torch3d", "csrc", "cuda", "*.cu"))
     define_macros += [('WITH_CUDA', None)]
 
-ext_modules += [
-    extension(
+    ext_modules += [
+        CUDAExtension(
         "torch3d._C",
         sources,
         define_macros=define_macros
