@@ -3,11 +3,7 @@ import torch.nn as nn
 import torch3d.nn.functional as F
 
 
-__all__ = [
-    "XConv",
-    "SetAbstraction",
-    "FeaturePropagation"
-]
+__all__ = ["XConv", "SetAbstraction", "FeaturePropagation"]
 
 
 class XConv(nn.Module):
@@ -37,10 +33,12 @@ class XConv(nn.Module):
             nn.Conv2d(self.kernel_size ** 2, self.kernel_size ** 2, 1, bias=self.bias),
         )
         self.conv = nn.Sequential(
-            nn.Conv2d(self.in_channels + self.mid_channels,
-                      self.out_channels,
-                      [1, self.kernel_size],
-                      bias=self.bias),
+            nn.Conv2d(
+                self.in_channels + self.mid_channels,
+                self.out_channels,
+                [1, self.kernel_size],
+                bias=self.bias,
+            ),
             nn.BatchNorm2d(self.out_channels),
             nn.ReLU(True),
         )
@@ -48,7 +46,7 @@ class XConv(nn.Module):
     def forward(self, p, q, x=None):
         batch_size = p.shape[0]
         _, indices = F.knn(p, q, self.kernel_size * self.dilation)
-        indices = indices[..., ::self.dilation]
+        indices = indices[..., :: self.dilation]
         p = F.gather_groups(p, indices)
         p_hat = p - q.unsqueeze(2)
         p_hat = p_hat.permute(0, 3, 1, 2)

@@ -21,15 +21,13 @@ class ShapeNetPart(Dataset):
             ("ply_data_train2.h5", "508eeeee96053b90388520c37df3a8b8"),
             ("ply_data_train3.h5", "88574c3d5c61d0f3156b9e02cd6cda03"),
             ("ply_data_train4.h5", "418cb01104740bf1353b792331cb5878"),
-            ("ply_data_train5.h5", "26e65c8827b08f7c340cd03f902e27e8")
+            ("ply_data_train5.h5", "26e65c8827b08f7c340cd03f902e27e8"),
         ],
-        "val": [
-            ("ply_data_val0.h5", "628b4b3cbc17765de2114d104e51b9c9")
-        ],
+        "val": [("ply_data_val0.h5", "628b4b3cbc17765de2114d104e51b9c9")],
         "test": [
             ("ply_data_test0.h5", "fa3fb32b179128ede32c2c948ed83efc"),
-            ("ply_data_test1.h5", "5eb63ae378831c665282c8f22b6c1249")
-        ]
+            ("ply_data_test1.h5", "5eb63ae378831c665282c8f22b6c1249"),
+        ],
     }
     cat2synset = {
         "airplane": "02691156",
@@ -47,15 +45,12 @@ class ShapeNetPart(Dataset):
         "pistol": "03948459",
         "rocket": "04099429",
         "skateboard": "04225987",
-        "table": "04379243"
+        "table": "04379243",
     }
 
-    def __init__(self,
-                 root,
-                 split="train",
-                 transform=None,
-                 download=False,
-                 categories=None):
+    def __init__(
+        self, root, split="train", transform=None, download=False, categories=None
+    ):
         self.root = root
         self.split = split
         self.transform = transform
@@ -95,8 +90,10 @@ class ShapeNetPart(Dataset):
     def download(self):
         if not self._check_integrity():
             download_and_extract_archive(self.url, self.root)
-            os.rename(os.path.join(self.root, self.basedir),
-                      os.path.join(self.root, self.name))
+            os.rename(
+                os.path.join(self.root, self.basedir),
+                os.path.join(self.root, self.name),
+            )
 
     def _check_integrity(self):
         flist = self.splits["train"] + self.splits["val"] + self.splits["test"]

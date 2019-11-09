@@ -24,7 +24,9 @@ def to_tensor(pcd):
         raise TypeError("pcd should be an ndarray. Got {}.".format(type(pcd)))
 
     if not _is_numpy_pcd(pcd):
-        raise ValueError("pcd should be 2 dimensional. Got {} dimensions.".format(pcd.ndim))
+        raise ValueError(
+            "pcd should be 2 dimensional. Got {} dimensions.".format(pcd.ndim)
+        )
 
     pcd = torch.tensor(pcd.transpose((1, 0)))
     return pcd
@@ -35,7 +37,9 @@ def jitter(pcd):
         raise TypeError("pcd should be an ndarray. Got {}.".format(type(pcd)))
 
     if not _is_numpy_pcd(pcd):
-        raise ValueError("pcd should be 2 dimensional. Got {} dimensions.".format(pcd.ndim))
+        raise ValueError(
+            "pcd should be 2 dimensional. Got {} dimensions.".format(pcd.ndim)
+        )
 
     noise = np.random.rand(*pcd.shape)
     return pcd + noise
@@ -46,7 +50,9 @@ def random_sample(pcd, num_samples):
         raise TypeError("pcd should be an ndarray. Got {}.".format(type(pcd)))
 
     if not _is_numpy_pcd(pcd):
-        raise ValueError("pcd should be 2 dimensional. Got {} dimensions.".format(pcd.ndim))
+        raise ValueError(
+            "pcd should be 2 dimensional. Got {} dimensions.".format(pcd.ndim)
+        )
 
     n = pcd.shape[0]
     if n >= num_samples:
@@ -63,7 +69,9 @@ def shuffle(pcd):
         raise TypeError("pcd should be an ndarray. Got {}.".format(type(pcd)))
 
     if not _is_numpy_pcd(pcd):
-        raise ValueError("pcd should be 2 dimensional. Got {} dimensions.".format(pcd.ndim))
+        raise ValueError(
+            "pcd should be 2 dimensional. Got {} dimensions.".format(pcd.ndim)
+        )
 
     n = pcd.shape[0]
     return np.random.permutation(n)

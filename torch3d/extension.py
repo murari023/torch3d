@@ -7,5 +7,6 @@ def _lazy_import():
         return _C
     import torch
     from torch3d import _C as C
+
     _C = C
     return _C

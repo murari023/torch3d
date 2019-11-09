@@ -20,12 +20,12 @@ class ModelNet40(Dataset):
             ("ply_data_train1.h5", "e3f613fb500559403b34925112754dc4"),
             ("ply_data_train2.h5", "0c56e233a090ff87c3049d4ce08e7d8b"),
             ("ply_data_train3.h5", "9d2af465adfa33a3285c369f3ca66c45"),
-            ("ply_data_train4.h5", "dff38de489b2c41bfaeded86c2208984")
+            ("ply_data_train4.h5", "dff38de489b2c41bfaeded86c2208984"),
         ],
         "test": [
             ("ply_data_test0.h5", "e9732e6d83b09e79e9a7617df058adee"),
-            ("ply_data_test1.h5", "aba4b12a67c34391cc3c015a6f08ed4b")
-        ]
+            ("ply_data_test1.h5", "aba4b12a67c34391cc3c015a6f08ed4b"),
+        ],
     }
     categories = [
         "airplane",
@@ -67,15 +67,12 @@ class ModelNet40(Dataset):
         "tv_stand",
         "vase",
         "wardrobe",
-        "xbox"
+        "xbox",
     ]
 
-    def __init__(self,
-                 root,
-                 train=True,
-                 transform=None,
-                 download=False,
-                 categories=None):
+    def __init__(
+        self, root, train=True, transform=None, download=False, categories=None
+    ):
         self.root = root
         self.train = train
         self.transform = transform
@@ -117,8 +114,10 @@ class ModelNet40(Dataset):
     def download(self):
         if not self._check_integrity():
             download_and_extract_archive(self.url, self.root)
-            os.rename(os.path.join(self.root, self.basedir),
-                      os.path.join(self.root, self.name))
+            os.rename(
+                os.path.join(self.root, self.basedir),
+                os.path.join(self.root, self.name),
+            )
 
     def _check_integrity(self):
         flist = self.splits["train"] + self.splits["test"]

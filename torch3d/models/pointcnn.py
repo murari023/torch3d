@@ -27,7 +27,7 @@ class PointCNN(nn.Module):
             nn.Conv1d(256, 128, 1, bias=False),
             nn.BatchNorm1d(128),
             nn.ReLU(True),
-            nn.Dropout(0.2)
+            nn.Dropout(0.2),
         )
         self.fc = nn.Conv1d(128, self.num_classes, 1)
         self.avgpool = nn.AdaptiveAvgPool1d(1)

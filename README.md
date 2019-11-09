@@ -45,8 +45,7 @@ Roadmap
 
 **0.2.0**
 - [x] PointNet++ model
-- [x] Transforms: jitter
-- [x] Datasets: ShapeNetPart
+- [x] ShapeNetPart dataset
 
 **0.1.0**
 - [x] PointCNN model

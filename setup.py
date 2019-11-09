@@ -1,15 +1,15 @@
 import os
 import glob
 from setuptools import setup, find_packages
-from torch.utils.cpp_extension import BuildExtension, CppExtension, CUDAExtension, CUDA_HOME
+from torch.utils.cpp_extension import (
+    BuildExtension,
+    CppExtension,
+    CUDAExtension,
+    CUDA_HOME,
+)
 
 
-requirements = [
-    "h5py",
-    "numpy",
-    "torch",
-    "torchvision"
-]
+requirements = ["h5py", "numpy", "torch", "torchvision"]
 
 ext_modules = []
 
@@ -19,15 +19,9 @@ if CUDA_HOME is not None:
     extension = CUDAExtension
     sources += glob.glob(os.path.join("torch3d", "csrc", "*.cpp"))
     sources += glob.glob(os.path.join("torch3d", "csrc", "cuda", "*.cu"))
-    define_macros += [('WITH_CUDA', None)]
+    define_macros += [("WITH_CUDA", None)]
 
-    ext_modules += [
-        CUDAExtension(
-        "torch3d._C",
-        sources,
-        define_macros=define_macros
-    )
-]
+    ext_modules += [CUDAExtension("torch3d._C", sources, define_macros=define_macros)]
 
 __version__ = "0.2.0"
 url = "https://github.com/pqhieu/torch3d"
@@ -42,5 +36,5 @@ setup(
     install_requires=requirements,
     ext_modules=ext_modules,
     cmdclass={"build_ext": BuildExtension},
-    packages=find_packages()
+    packages=find_packages(),
 )

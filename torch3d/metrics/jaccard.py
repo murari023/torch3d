@@ -18,8 +18,8 @@ class Jaccard(Metric):
         x = torch.argmax(x, dim=1).view(-1)
         y = y.view(-1)
         for k in range(self.num_classes):
-            a = (x == k)
-            b = (y == k)
+            a = x == k
+            b = y == k
             self.inter[k] += torch.sum(a & b)
             self.union[k] += torch.sum(a | b)
 

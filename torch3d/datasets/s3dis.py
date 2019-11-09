@@ -38,7 +38,7 @@ class S3DIS(Dataset):
         ("ply_data_all_20.h5", "6d44469f525825d17c046217e4ce6750"),
         ("ply_data_all_21.h5", "aedc2ec2984a058b9d914ba6d9b65159"),
         ("ply_data_all_22.h5", "a01ae14ceff1165ad49e1973570c08c5"),
-        ("ply_data_all_23.h5", "67e8c5a7179babe18f110ebea1d3e3b7")
+        ("ply_data_all_23.h5", "67e8c5a7179babe18f110ebea1d3e3b7"),
     ]
     categories = [
         "ceiling",
@@ -53,15 +53,10 @@ class S3DIS(Dataset):
         "sofa",
         "bookcase",
         "board",
-        "clutter"
+        "clutter",
     ]
 
-    def __init__(self,
-                 root,
-                 train=True,
-                 test_area=5,
-                 transform=None,
-                 download=False):
+    def __init__(self, root, train=True, test_area=5, transform=None, download=False):
         self.root = root
         self.train = train
         self.test_area = test_area
@@ -109,11 +104,13 @@ class S3DIS(Dataset):
     def download(self):
         if not self._check_integrity():
             download_and_extract_archive(self.url, self.root)
-            os.rename(os.path.join(self.root, self.basedir),
-                      os.path.join(self.root, self.name))
+            os.rename(
+                os.path.join(self.root, self.basedir),
+                os.path.join(self.root, self.name),
+            )
 
     def _check_integrity(self):
-        for filename, md5 in (self.flist):
+        for filename, md5 in self.flist:
             fpath = os.path.join(self.root, self.name, filename)
             if not check_integrity(fpath, md5):
                 return False
