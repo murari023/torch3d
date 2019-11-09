@@ -103,10 +103,11 @@ class SetAbstraction(nn.Module):
 
 
 class FeaturePropagation(nn.Module):
-    def __init__(self, in_channels, mlp, bias=True):
+    def __init__(self, in_channels, mlp, k=3, bias=True):
         super(FeaturePropagation, self).__init__()
         self.in_channels = in_channels
         self.bias = bias
+        self.k = k
         modules = []
         last_channels = self.in_channels
         for channels in mlp:
@@ -117,7 +118,7 @@ class FeaturePropagation(nn.Module):
         self.mlp = nn.Sequential(*modules)
 
     def forward(self, p, q, x, y=None):
-        sqdist, indices = F.knn(p, q, 3)
+        sqdist, indices = F.knn(p, q, self.k)
         sqdist[sqdist < 1e-10] = 1e-10
         weight = 1.0 / sqdist
         weight = weight / torch.sum(weight, dim=-1, keepdim=True)
