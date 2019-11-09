@@ -21,9 +21,9 @@ class PointNetSSG(nn.Module):
         self.sa2 = SetAbstraction(64 + 3, [64, 64, 128], 0.2, 32, bias=False)
         self.sa3 = SetAbstraction(128 + 3, [128, 128, 256], 0.4, 32, bias=False)
         self.sa4 = SetAbstraction(256 + 3, [256, 256, 512], 0.8, 32, bias=False)
-        self.fp1 = FeaturePropagation(512, [256, 256], bias=False)
-        self.fp2 = FeaturePropagation(256, [256, 256], bias=False)
-        self.fp3 = FeaturePropagation(256, [256, 128], bias=False)
+        self.fp1 = FeaturePropagation(768, [256, 256], bias=False)
+        self.fp2 = FeaturePropagation(384, [256, 256], bias=False)
+        self.fp3 = FeaturePropagation(320, [256, 128], bias=False)
         self.fp4 = FeaturePropagation(128, [128, 128], bias=False)
         self.mlp = nn.Sequential(
             nn.Conv1d(128, 128, 1, bias=False),
@@ -39,17 +39,17 @@ class PointNetSSG(nn.Module):
 
     def forward(self, p, x=None):
         q1, _ = self.down1(p)
-        p1, x = self.sa1(p, q1, x)
+        p1, x1 = self.sa1(p, q1, x)
         q2, _ = self.down2(p1)
-        p2, x = self.sa2(p1, q2, x)
+        p2, x2 = self.sa2(p1, q2, x1)
         q3, _ = self.down3(p2)
-        p3, x = self.sa3(p2, q3, x)
+        p3, x3 = self.sa3(p2, q3, x2)
         q4, _ = self.down4(p3)
-        p4, x = self.sa4(p3, q4, x)
-        p3, x = self.fp1(p4, q3, x)
-        p2, x = self.fp2(p3, q2, x)
-        p1, x = self.fp3(p2, q1, x)
-        p, x = self.fp4(p1, p, x)
+        p4, x4 = self.sa4(p3, q4, x3)
+        p3, x3 = self.fp1(p4, q3, x4, x3)
+        p2, x2 = self.fp2(p3, q2, x3, x2)
+        p1, x1 = self.fp3(p2, q1, x2, x1)
+        p, x = self.fp4(p1, p, x1)
         x = self.mlp(x)
         x = self.fc(x)
         return x
