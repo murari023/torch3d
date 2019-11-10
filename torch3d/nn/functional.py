@@ -53,6 +53,10 @@ def gather_groups(p, indices):
     return output
 
 
+def interpolate(input, index, weight):
+    return _Interpolate.apply(input, index, weight)
+
+
 class _GatherPoints(torch.autograd.Function):
     @staticmethod
     def forward(ctx, points, indices):
@@ -65,5 +69,21 @@ class _GatherPoints(torch.autograd.Function):
     def backward(ctx, grad):
         indices, n = ctx.for_backwards
         _C = _lazy_import()
-        output = _C.gather_points_backward(grad, indices, n)
+        output = _C.gather_points_grad(grad, indices, n)
         return output, None
+
+
+class _Interpolate(torch.autograd.Function):
+    @staticmethod
+    def forward(ctx, input, indices, weight):
+        n = input.shape[2]
+        ctx.for_backwards = (indices, weight, n)
+        _C = _lazy_import()
+        return _C.interpolate(input, indices, weight)
+
+    @staticmethod
+    def backward(ctx, grad):
+        indices, weight, n = ctx.for_backwards
+        _C = _lazy_import()
+        output = _C.interpolate_grad(grad, indices, weight, n)
+        return output, None, None

@@ -55,7 +55,7 @@ at::Tensor gather_points_cuda(const at::Tensor& points, const at::Tensor& indice
 
 
 template <typename T>
-__global__ void gather_points_backward_kernel(
+__global__ void gather_points_grad_kernel(
     const T* __restrict__ grad,
     const int64_t* __restrict__ indices,
     int batch_size,
@@ -78,18 +78,18 @@ __global__ void gather_points_backward_kernel(
 }
 
 
-at::Tensor gather_points_backward_cuda(const at::Tensor& grad, const at::Tensor& indices, int n)
+at::Tensor gather_points_grad_cuda(const at::Tensor& grad, const at::Tensor& indices, int n)
 {
     int batch_size = grad.size(0);
     int m = grad.size(1);
     int channels = grad.size(2);
     at::Tensor output = at::zeros({batch_size, n, channels}, grad.options());
 
-    AT_DISPATCH_FLOATING_TYPES(grad.type(), "gather_points_backward_cuda", [&] {
+    AT_DISPATCH_FLOATING_TYPES(grad.type(), "gather_points_grad_cuda", [&] {
         dim3 block(num_threads);
         dim3 grid(batch_size);
         cudaStream_t stream = at::cuda::getCurrentCUDAStream();
-        gather_points_backward_kernel<scalar_t><<<grid, block, 0, stream>>>(
+        gather_points_grad_kernel<scalar_t><<<grid, block, 0, stream>>>(
             grad.contiguous().data<scalar_t>(),
             indices.contiguous().data<int64_t>(),
             batch_size,

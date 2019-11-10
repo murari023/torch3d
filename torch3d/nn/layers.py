@@ -120,10 +120,9 @@ class FeaturePropagation(nn.Module):
     def forward(self, p, q, x, y=None):
         sqdist, indices = F.knn(p, q, self.k)
         sqdist[sqdist < 1e-10] = 1e-10
-        weight = 1.0 / sqdist
+        weight = torch.reciprocal(sqdist)
         weight = weight / torch.sum(weight, dim=-1, keepdim=True)
-        x = torch.stack([x[b, :, i] for b, i in enumerate(indices)], dim=0)
-        x = torch.sum(x * weight.unsqueeze(1), dim=-1)
+        x = F.interpolate(x, indices, weight)
         if y is not None:
             x = torch.cat([x, y], dim=1)
         x = self.mlp(x)

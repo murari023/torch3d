@@ -29,10 +29,28 @@ at::Tensor gather_points(const at::Tensor& points, const at::Tensor& indices)
 }
 
 
-at::Tensor gather_points_backward(const at::Tensor& grad, const at::Tensor& indices, int n)
+at::Tensor gather_points_grad(const at::Tensor& grad, const at::Tensor& indices, int n)
 {
     if (grad.type().is_cuda()) {
-        return gather_points_backward_cuda(grad, indices, n);
+        return gather_points_grad_cuda(grad, indices, n);
+    }
+    AT_ERROR("Not compiled with GPU support");
+}
+
+
+at::Tensor interpolate(const at::Tensor& input, const at::Tensor& indices, const at::Tensor& weight)
+{
+    if (input.type().is_cuda()) {
+        return interpolate_cuda(input, indices, weight);
+    }
+    AT_ERROR("Not compiled with GPU support");
+}
+
+
+at::Tensor interpolate_grad(const at::Tensor& grad, const at::Tensor& indices, const at::Tensor& weight, int n)
+{
+    if (grad.type().is_cuda()) {
+        return interpolate_grad_cuda(grad, indices, weight, n);
     }
     AT_ERROR("Not compiled with GPU support");
 }
@@ -42,5 +60,7 @@ PYBIND11_MODULE(TORCH_EXTENSION_NAME, m) {
     m.def("farthest_point_sample", &farthest_point_sample);
     m.def("ball_point", &ball_point);
     m.def("gather_points", &gather_points);
-    m.def("gather_points_backward", &gather_points_backward);
+    m.def("gather_points_grad", &gather_points_grad);
+    m.def("interpolate", &interpolate);
+    m.def("interpolate_grad", &interpolate_grad);
 }
