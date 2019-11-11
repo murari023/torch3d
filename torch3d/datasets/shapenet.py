@@ -48,8 +48,18 @@ class ShapeNetPart(VisionDataset):
         "table": "04379243",
     }
 
-    def __init__(self, root, split="train", download=False, transform=None, target_transform=None, transforms=None):
-        super(ShapeNetPart, self).__init__(root, transforms, transform, target_transform)
+    def __init__(
+        self,
+        root,
+        split="train",
+        download=False,
+        transform=None,
+        target_transform=None,
+        transforms=None,
+    ):
+        super(ShapeNetPart, self).__init__(
+            root, transforms, transform, target_transform
+        )
         self.split = split
 
         if download:

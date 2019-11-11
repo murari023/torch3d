@@ -70,7 +70,15 @@ class ModelNet40(VisionDataset):
         "xbox",
     ]
 
-    def __init__(self, root, train=True, download=False, transform=None, target_transform=None, transforms=None):
+    def __init__(
+        self,
+        root,
+        train=True,
+        download=False,
+        transform=None,
+        target_transform=None,
+        transforms=None,
+    ):
         super(ModelNet40, self).__init__(root, transforms, transform, target_transform)
         self.train = train
 

@@ -56,7 +56,16 @@ class S3DIS(VisionDataset):
         "clutter",
     ]
 
-    def __init__(self, root, train=True, test_area=5, download=False, transform=None, target_transform=None, transforms=None):
+    def __init__(
+        self,
+        root,
+        train=True,
+        test_area=5,
+        download=False,
+        transform=None,
+        target_transform=None,
+        transforms=None,
+    ):
         super(S3DIS, self).__init__(root, transforms, transform, target_transform)
         self.train = train
         self.test_area = test_area
