@@ -39,16 +39,16 @@ def farthest_point_sample(p, num_samples):
     return _C.farthest_point_sample(p, num_samples)
 
 
-def gather_points(p, indices):
-    return _GatherPoints.apply(p, indices)
+def gather_points(p, index):
+    return _GatherPoints.apply(p, index)
 
 
-def gather_groups(p, indices):
-    batch_size = indices.shape[0]
-    m = indices.shape[1]
-    k = indices.shape[2]
-    indices = indices.view(batch_size, -1)
-    output = _GatherPoints.apply(p, indices)
+def gather_groups(p, index):
+    batch_size = index.shape[0]
+    m = index.shape[1]
+    k = index.shape[2]
+    index = index.view(batch_size, -1)
+    output = _GatherPoints.apply(p, index)
     output = output.view(batch_size, m, k, -1)
     return output
 
@@ -59,31 +59,31 @@ def interpolate(input, index, weight):
 
 class _GatherPoints(torch.autograd.Function):
     @staticmethod
-    def forward(ctx, points, indices):
+    def forward(ctx, points, index):
         n = points.shape[1]
-        ctx.for_backwards = (indices, n)
+        ctx.for_backwards = (index, n)
         _C = _lazy_import()
-        return _C.gather_points(points, indices)
+        return _C.gather_points(points, index)
 
     @staticmethod
     def backward(ctx, grad):
-        indices, n = ctx.for_backwards
+        index, n = ctx.for_backwards
         _C = _lazy_import()
-        output = _C.gather_points_grad(grad, indices, n)
+        output = _C.gather_points_grad(grad, index, n)
         return output, None
 
 
 class _Interpolate(torch.autograd.Function):
     @staticmethod
-    def forward(ctx, input, indices, weight):
+    def forward(ctx, input, index, weight):
         n = input.shape[2]
-        ctx.for_backwards = (indices, weight, n)
+        ctx.for_backwards = (index, weight, n)
         _C = _lazy_import()
-        return _C.interpolate(input, indices, weight)
+        return _C.interpolate(input, index, weight)
 
     @staticmethod
     def backward(ctx, grad):
-        indices, weight, n = ctx.for_backwards
+        index, weight, n = ctx.for_backwards
         _C = _lazy_import()
-        output = _C.interpolate_grad(grad, indices, weight, n)
+        output = _C.interpolate_grad(grad, index, weight, n)
         return output, None, None

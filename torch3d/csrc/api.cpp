@@ -20,37 +20,37 @@ at::Tensor ball_point(const at::Tensor& points, const at::Tensor& queries, float
 }
 
 
-at::Tensor gather_points(const at::Tensor& points, const at::Tensor& indices)
+at::Tensor gather_points(const at::Tensor& points, const at::Tensor& index)
 {
     if (points.type().is_cuda()) {
-        return gather_points_cuda(points, indices);
+        return gather_points_cuda(points, index);
     }
     AT_ERROR("Not compiled with GPU support");
 }
 
 
-at::Tensor gather_points_grad(const at::Tensor& grad, const at::Tensor& indices, int n)
+at::Tensor gather_points_grad(const at::Tensor& grad, const at::Tensor& index, int n)
 {
     if (grad.type().is_cuda()) {
-        return gather_points_grad_cuda(grad, indices, n);
+        return gather_points_grad_cuda(grad, index, n);
     }
     AT_ERROR("Not compiled with GPU support");
 }
 
 
-at::Tensor interpolate(const at::Tensor& input, const at::Tensor& indices, const at::Tensor& weight)
+at::Tensor interpolate(const at::Tensor& input, const at::Tensor& index, const at::Tensor& weight)
 {
     if (input.type().is_cuda()) {
-        return interpolate_cuda(input, indices, weight);
+        return interpolate_cuda(input, index, weight);
     }
     AT_ERROR("Not compiled with GPU support");
 }
 
 
-at::Tensor interpolate_grad(const at::Tensor& grad, const at::Tensor& indices, const at::Tensor& weight, int n)
+at::Tensor interpolate_grad(const at::Tensor& grad, const at::Tensor& index, const at::Tensor& weight, int n)
 {
     if (grad.type().is_cuda()) {
-        return interpolate_grad_cuda(grad, indices, weight, n);
+        return interpolate_grad_cuda(grad, index, weight, n);
     }
     AT_ERROR("Not compiled with GPU support");
 }

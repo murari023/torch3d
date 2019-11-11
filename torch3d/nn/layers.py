@@ -45,16 +45,16 @@ class XConv(nn.Module):
 
     def forward(self, p, q, x=None):
         batch_size = p.shape[0]
-        _, indices = F.knn(p, q, self.kernel_size * self.dilation)
-        indices = indices[..., :: self.dilation]
-        p = F.gather_groups(p, indices)
+        _, index = F.knn(p, q, self.kernel_size * self.dilation)
+        index = index[..., :: self.dilation]
+        p = F.gather_groups(p, index)
         p_hat = p - q.unsqueeze(2)
         p_hat = p_hat.permute(0, 3, 1, 2)
         x_hat = self.mlp(p_hat)
         x_hat = x_hat.permute(0, 2, 3, 1)
         if x is not None:
             x = x.permute(0, 2, 1)
-            x = F.gather_groups(x, indices)
+            x = F.gather_groups(x, index)
             x_hat = torch.cat([x_hat, x], dim=-1)
         T = self.stn(p_hat)
         T = T.view(batch_size, self.kernel_size, self.kernel_size, -1)
@@ -86,15 +86,15 @@ class SetAbstraction(nn.Module):
 
     def forward(self, p, q, x=None):
         if self.radius is not None:
-            indices = F.ball_point(p, q, self.radius, self.k)
-            p = F.gather_groups(p, indices)
+            index = F.ball_point(p, q, self.radius, self.k)
+            p = F.gather_groups(p, index)
             p_hat = p - q.unsqueeze(2)
             x_hat = p_hat
         else:
             x_hat = p.unsqueeze(1)
         if x is not None:
             x = x.permute(0, 2, 1)
-            x = F.gather_groups(x, indices) if self.radius else x.unsqueeze(1)
+            x = F.gather_groups(x, index) if self.radius else x.unsqueeze(1)
             x_hat = torch.cat([x_hat, x], dim=-1)
         x = x_hat.permute(0, 3, 1, 2)
         x = self.mlp(x)
@@ -118,11 +118,11 @@ class FeaturePropagation(nn.Module):
         self.mlp = nn.Sequential(*modules)
 
     def forward(self, p, q, x, y=None):
-        sqdist, indices = F.knn(p, q, self.k)
+        sqdist, index = F.knn(p, q, self.k)
         sqdist[sqdist < 1e-10] = 1e-10
         weight = torch.reciprocal(sqdist)
         weight = weight / torch.sum(weight, dim=-1, keepdim=True)
-        x = F.interpolate(x, indices, weight)
+        x = F.interpolate(x, index, weight)
         if y is not None:
             x = torch.cat([x, y], dim=1)
         x = self.mlp(x)

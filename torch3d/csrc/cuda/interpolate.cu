@@ -37,13 +37,13 @@ __global__ void interpolate_kernel(
 }
 
 
-at::Tensor interpolate_cuda(const at::Tensor& input, const at::Tensor& indices, const at::Tensor& weight)
+at::Tensor interpolate_cuda(const at::Tensor& input, const at::Tensor& index, const at::Tensor& weight)
 {
     int batch_size = input.size(0);
     int channels = input.size(1);
     int n = input.size(2);
-    int m = indices.size(1);
-    int kernel_size = indices.size(2);
+    int m = index.size(1);
+    int kernel_size = index.size(2);
     at::Tensor output = at::zeros({batch_size, channels, m}, input.options());
 
     AT_DISPATCH_FLOATING_TYPES(input.type(), "interpolate_cuda", [&] {
@@ -52,7 +52,7 @@ at::Tensor interpolate_cuda(const at::Tensor& input, const at::Tensor& indices, 
         cudaStream_t stream = at::cuda::getCurrentCUDAStream();
         interpolate_kernel<scalar_t><<<grid, block, 0, stream>>>(
             input.contiguous().data<scalar_t>(),
-            indices.contiguous().data<int64_t>(),
+            index.contiguous().data<int64_t>(),
             weight.contiguous().data<scalar_t>(),
             batch_size,
             n,
@@ -99,12 +99,12 @@ __global__ void interpolate_grad_kernel(
 }
 
 
-at::Tensor interpolate_grad_cuda(const at::Tensor& grad, const at::Tensor& indices, const at::Tensor& weight, int n)
+at::Tensor interpolate_grad_cuda(const at::Tensor& grad, const at::Tensor& index, const at::Tensor& weight, int n)
 {
     int batch_size = grad.size(0);
     int channels = grad.size(1);
     int m = grad.size(2);
-    int kernel_size = indices.size(2);
+    int kernel_size = index.size(2);
     at::Tensor output = at::zeros({batch_size, channels, n}, grad.options());
 
     AT_DISPATCH_FLOATING_TYPES(grad.type(), "interpolate_grad_cuda", [&] {
@@ -113,7 +113,7 @@ at::Tensor interpolate_grad_cuda(const at::Tensor& grad, const at::Tensor& indic
         cudaStream_t stream = at::cuda::getCurrentCUDAStream();
         interpolate_grad_kernel<scalar_t><<<grid, block, 0, stream>>>(
             grad.contiguous().data<scalar_t>(),
-            indices.contiguous().data<int64_t>(),
+            index.contiguous().data<int64_t>(),
             weight.contiguous().data<scalar_t>(),
             batch_size,
             n,

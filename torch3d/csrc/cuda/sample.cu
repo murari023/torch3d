@@ -24,7 +24,7 @@ __global__ void farthest_point_sample_kernel(
     int num_samples,
     int channels,
     T* __restrict__ sqdists,
-    int64_t* __restrict__ indices)
+    int64_t* __restrict__ index)
 {
     __shared__ T sdist[num_threads];
     __shared__ int64_t sdist_i[num_threads];
@@ -33,12 +33,12 @@ __global__ void farthest_point_sample_kernel(
 
     points += b * num_points * channels;
     sqdists += b * num_points;
-    indices += b * num_samples;
+    index += b * num_samples;
 
     int64_t prev = 0;
     int tid = threadIdx.x;
     if (tid == 0)
-        indices[prev] = 0;
+        index[prev] = 0;
 
     __syncthreads();
     for (int64_t i = 1; i < num_samples; ++i) {
@@ -116,7 +116,7 @@ __global__ void farthest_point_sample_kernel(
 
         prev = sdist_i[0];
         if (tid == 0)
-            indices[i] = prev;
+            index[i] = prev;
     }
 }
 
@@ -126,7 +126,7 @@ at::Tensor farthest_point_sample_cuda(const at::Tensor& points, int num_samples)
     int batch_size = points.size(0);
     int num_points = points.size(1);
     int channels = points.size(2);
-    at::Tensor indices = at::zeros({batch_size, num_samples}, points.options().dtype(at::kLong));
+    at::Tensor index = at::zeros({batch_size, num_samples}, points.options().dtype(at::kLong));
     at::Tensor sqdists = at::zeros({batch_size, num_points}, points.options()).fill_(1e10);
 
     AT_DISPATCH_FLOATING_TYPES(points.type(), "farthest_point_sample_cuda", [&] {
@@ -140,8 +140,8 @@ at::Tensor farthest_point_sample_cuda(const at::Tensor& points, int num_samples)
             num_samples,
             channels,
             sqdists.data<scalar_t>(),
-            indices.data<int64_t>());
+            index.data<int64_t>());
     });
 
-    return indices;
+    return index;
 }

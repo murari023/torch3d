@@ -14,13 +14,13 @@ __global__ void ball_point_kernel(
     int channels,
     float radius,
     int k,
-    int64_t* __restrict__ indices)
+    int64_t* __restrict__ index)
 {
     int b = blockIdx.x;
 
     points += b * num_points * channels;
     queries += b * num_queries * channels;
-    indices += b * num_queries * k;
+    index += b * num_queries * k;
 
     int tid = threadIdx.x;
     float r2 = radius * radius;
@@ -37,9 +37,9 @@ __global__ void ball_point_kernel(
             if (dist < r2) {
                 if (count == 0) {
                     for (int l = 0; l < k; ++l)
-                        indices[i * k + l] = j;
+                        index[i * k + l] = j;
                 }
-                indices[i * k + count] = j;
+                index[i * k + count] = j;
                 ++count;
             }
             if (count >= k)
@@ -55,7 +55,7 @@ at::Tensor ball_point_cuda(const at::Tensor& points, const at::Tensor& queries, 
     int num_points = points.size(1);
     int num_queries = queries.size(1);
     int channels = points.size(2);
-    at::Tensor indices = at::zeros({batch_size, num_queries, k}, points.options().dtype(at::kLong));
+    at::Tensor index = at::zeros({batch_size, num_queries, k}, points.options().dtype(at::kLong));
 
     AT_DISPATCH_FLOATING_TYPES(points.type(), "ball_point_cuda", [&] {
         dim3 block(num_threads);
@@ -70,8 +70,8 @@ at::Tensor ball_point_cuda(const at::Tensor& points, const at::Tensor& queries, 
             channels,
             radius,
             k,
-            indices.data<int64_t>());
+            index.data<int64_t>());
     });
 
-    return indices;
+    return index;
 }
