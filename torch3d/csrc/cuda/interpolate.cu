@@ -7,34 +7,32 @@ constexpr int num_threads = 256;
 template <typename T>
 __global__ void interpolate_kernel(
     const T* __restrict__ input,
-    const int64_t* __restrict__ indices,
+    const int64_t* __restrict__ index,
     const T* __restrict__ weight,
     int batch_size,
     int n,
     int m,
     int channels,
+    int kernel_size,
     T* __restrict__ output)
 {
     int b = blockIdx.x;
 
     input += b * channels * n;
-    indices += b * m * 3;
-    weight += b * m * 3;
+    index += b * m * kernel_size;
+    weight += b * m * kernel_size;
     output += b * channels * m;
 
     int tid = threadIdx.x;
     for (int i = tid; i < channels * m; i += num_threads) {
-        int k = i % m;
+        int j = i % m;
         int c = i / m;
 
-        T w1 = weight[k * 3 + 0];
-        T w2 = weight[k * 3 + 1];
-        T w3 = weight[k * 3 + 2];
-        int64_t i1 = indices[k * 3 + 0];
-        int64_t i2 = indices[k * 3 + 1];
-        int64_t i3 = indices[k * 3 + 2];
-
-        output[i] = input[c * n + i1] * w1 + input[c * n + i2] * w2 + input[c * n + i3] * w3;
+        for (int k = 0; k < kernel_size; ++k) {
+            T w = weight[j * kernel_size + k];
+            int64_t idx = index[j * kernel_size + k];
+            output[i] += input[c * n + idx] * w;
+        }
     }
 }
 
@@ -45,6 +43,7 @@ at::Tensor interpolate_cuda(const at::Tensor& input, const at::Tensor& indices, 
     int channels = input.size(1);
     int n = input.size(2);
     int m = indices.size(1);
+    int kernel_size = indices.size(2);
     at::Tensor output = at::zeros({batch_size, channels, m}, input.options());
 
     AT_DISPATCH_FLOATING_TYPES(input.type(), "interpolate_cuda", [&] {
@@ -59,6 +58,7 @@ at::Tensor interpolate_cuda(const at::Tensor& input, const at::Tensor& indices, 
             n,
             m,
             channels,
+            kernel_size,
             output.data<scalar_t>());
     });
 
@@ -69,36 +69,32 @@ at::Tensor interpolate_cuda(const at::Tensor& input, const at::Tensor& indices, 
 template <typename T>
 __global__ void interpolate_grad_kernel(
     const T* __restrict__ grad,
-    const int64_t* __restrict__ indices,
+    const int64_t* __restrict__ index,
     const T* __restrict__ weight,
     int batch_size,
     int n,
     int m,
     int channels,
+    int kernel_size,
     T* __restrict__ output)
 {
     int b = blockIdx.x;
 
     grad += b * channels * m;
-    indices += b * m * 3;
-    weight += b * m * 3;
+    index += b * m * kernel_size;
+    weight += b * m * kernel_size;
     output += b * channels * n;
 
     int tid = threadIdx.x;
     for (int i = tid; i < channels * m; i += num_threads) {
-        int k = i % m;
+        int j = i % m;
         int c = i / m;
 
-        T w1 = weight[k * 3 + 0];
-        T w2 = weight[k * 3 + 1];
-        T w3 = weight[k * 3 + 2];
-        int64_t i1 = indices[k * 3 + 0];
-        int64_t i2 = indices[k * 3 + 1];
-        int64_t i3 = indices[k * 3 + 2];
-
-        atomicAdd(output + c * n + i1, grad[i] * w1);
-        atomicAdd(output + c * n + i2, grad[i] * w2);
-        atomicAdd(output + c * n + i3, grad[i] * w3);
+        for (int k = 0; k < kernel_size; ++k) {
+            T w = weight[j * kernel_size + k];
+            int64_t idx = index[j * kernel_size + k];
+            atomicAdd(output + c * n + idx, grad[i] * w);
+        }
     }
 }
 
@@ -108,6 +104,7 @@ at::Tensor interpolate_grad_cuda(const at::Tensor& grad, const at::Tensor& indic
     int batch_size = grad.size(0);
     int channels = grad.size(1);
     int m = grad.size(2);
+    int kernel_size = indices.size(2);
     at::Tensor output = at::zeros({batch_size, channels, n}, grad.options());
 
     AT_DISPATCH_FLOATING_TYPES(grad.type(), "interpolate_grad_cuda", [&] {
@@ -122,6 +119,7 @@ at::Tensor interpolate_grad_cuda(const at::Tensor& grad, const at::Tensor& indic
             n,
             m,
             channels,
+            kernel_size,
             output.data<scalar_t>());
     });
 
