@@ -1,11 +1,11 @@
 import os
 import h5py
 import numpy as np
-from torch.utils.data import Dataset
+from torchvision.datasets import VisionDataset
 from torchvision.datasets.utils import download_and_extract_archive, check_integrity
 
 
-class ModelNet40(Dataset):
+class ModelNet40(VisionDataset):
     """
     The `ModelNet40 <https://modelnet.cs.princeton.edu/>`_ dataset.
 
@@ -70,12 +70,9 @@ class ModelNet40(Dataset):
         "xbox",
     ]
 
-    def __init__(
-        self, root, train=True, transform=None, download=False, categories=None
-    ):
-        self.root = root
+    def __init__(self, root, train=True, download=False, transform=None, target_transform=None, transforms=None):
+        super(ModelNet40, self).__init__(root, transforms, transform, target_transform)
         self.train = train
-        self.transform = transform
 
         if download:
             self.download()
@@ -107,8 +104,8 @@ class ModelNet40(Dataset):
     def __getitem__(self, i):
         pcd = self.data[i]
         target = self.targets[i]
-        if self.transform is not None:
-            pcd, target = self.transform(pcd, target)
+        if self.transforms is not None:
+            pcd, target = self.transforms(pcd, target)
         return pcd, target
 
     def download(self):

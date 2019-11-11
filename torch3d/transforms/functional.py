@@ -42,3 +42,15 @@ def sample(pcd, samples):
         )
 
     return pcd[samples]
+
+
+def shuffle(pcd, perm):
+    if not _is_numpy(pcd):
+        raise TypeError("pcd should be an ndarray. Got {}.".format(type(pcd)))
+
+    if not _is_numpy_pcd(pcd):
+        raise ValueError(
+            "pcd should be 2 dimensional. Got {} dimensions.".format(pcd.ndim)
+        )
+
+    return pcd[perm]

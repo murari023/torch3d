@@ -25,7 +25,7 @@ Installation
 ------------
 
 Required PyTorch 1.2 or newer. Some other dependencies are:
-- torchvision (only needed to download datasets, may consider dropping it later)
+- torchvision
 - h5py
 
 From PyPi:

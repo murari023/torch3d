@@ -1,11 +1,11 @@
 import os
 import h5py
 import numpy as np
-from torch.utils.data import Dataset
+from torchvision.datasets import VisionDataset
 from torchvision.datasets.utils import download_and_extract_archive, check_integrity
 
 
-class S3DIS(Dataset):
+class S3DIS(VisionDataset):
     """
     The `S3DIS <http://buildingparser.stanford.edu/dataset.html>`_ dataset.
 
@@ -56,11 +56,10 @@ class S3DIS(Dataset):
         "clutter",
     ]
 
-    def __init__(self, root, train=True, test_area=5, transform=None, download=False):
-        self.root = root
+    def __init__(self, root, train=True, test_area=5, download=False, transform=None, target_transform=None, transforms=None):
+        super(S3DIS, self).__init__(root, transforms, transform, target_transform)
         self.train = train
         self.test_area = test_area
-        self.transform = transform
 
         if download:
             self.download()
@@ -97,8 +96,8 @@ class S3DIS(Dataset):
     def __getitem__(self, i):
         pcd = self.data[i]
         target = self.targets[i]
-        if self.transform is not None:
-            pcd, target = self.transform(pcd, target)
+        if self.transforms is not None:
+            pcd, target = self.transforms(pcd, target)
         return pcd, target
 
     def download(self):

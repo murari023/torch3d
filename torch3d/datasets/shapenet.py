@@ -1,11 +1,11 @@
 import os
 import h5py
 import numpy as np
-from torch.utils.data import Dataset
+from torchvision.datasets import VisionDataset
 from torchvision.datasets.utils import download_and_extract_archive, check_integrity
 
 
-class ShapeNetPart(Dataset):
+class ShapeNetPart(VisionDataset):
     """
     The ShapeNet part segmentation dataset.
 
@@ -48,12 +48,9 @@ class ShapeNetPart(Dataset):
         "table": "04379243",
     }
 
-    def __init__(
-        self, root, split="train", transform=None, download=False, categories=None
-    ):
-        self.root = root
+    def __init__(self, root, split="train", download=False, transform=None, target_transform=None, transforms=None):
+        super(ShapeNetPart, self).__init__(root, transforms, transform, target_transform)
         self.split = split
-        self.transform = transform
 
         if download:
             self.download()
@@ -85,8 +82,8 @@ class ShapeNetPart(Dataset):
             "label": self.labels[i],
             "partseg": self.parts[i],
         }
-        if self.transform is not None:
-            pcd, target = self.transform(pcd, target)
+        if self.transforms is not None:
+            pcd, target = self.transforms(pcd, target)
         return pcd, target
 
     def download(self):
