@@ -80,12 +80,14 @@ class ShapeNetPart(Dataset):
         self.labels = np.squeeze(self.labels).astype(np.int64)
 
     def __getitem__(self, i):
-        points = self.data[i]
-        label = self.labels[i]
-        part = self.parts[i]
+        pcd = self.data[i]
+        target = {
+            "label": self.labels[i],
+            "partseg": self.parts[i],
+        }
         if self.transform is not None:
-            points, label, part = self.transform(points, label, part)
-        return points, label, part
+            pcd, target = self.transform(pcd, target)
+        return pcd, target
 
     def download(self):
         if not self._check_integrity():
