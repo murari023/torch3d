@@ -1,13 +1,16 @@
 #include "cuda.h"
 
+
 constexpr int num_threads = 256;
+
 
 template <typename T>
 __device__ void __update(
     T* __restrict__ sdist,
     int64_t* __restrict__ sdist_i,
     int64_t i,
-    int64_t j) {
+    int64_t j)
+{
     const T v1 = sdist[i];
     const T v2 = sdist[j];
     const int64_t i1 = sdist_i[i];
@@ -15,6 +18,7 @@ __device__ void __update(
     sdist[i] = max(v1, v2);
     sdist_i[i] = v2 > v1 ? i2 : i1;
 }
+
 
 template <typename T>
 __global__ void farthest_point_sample_kernel(
@@ -24,7 +28,8 @@ __global__ void farthest_point_sample_kernel(
     int num_samples,
     int channels,
     T* __restrict__ sqdists,
-    int64_t* __restrict__ index) {
+    int64_t* __restrict__ index)
+{
     __shared__ T sdist[num_threads];
     __shared__ int64_t sdist_i[num_threads];
 
@@ -119,7 +124,9 @@ __global__ void farthest_point_sample_kernel(
     }
 }
 
-at::Tensor farthest_point_sample_cuda(const at::Tensor& points, int num_samples) {
+
+at::Tensor farthest_point_sample_cuda(const at::Tensor& points, int num_samples)
+{
     int batch_size = points.size(0);
     int num_points = points.size(1);
     int channels = points.size(2);

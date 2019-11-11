@@ -1,10 +1,10 @@
 ---
-AccessModifierOffset: -1
+AccessModifierOffset: -4
 AlignAfterOpenBracket: AlwaysBreak
 AlignConsecutiveAssignments: false
 AlignConsecutiveDeclarations: false
 AlignEscapedNewlinesLeft: true
-AlignOperands:   false
+AlignOperands: false
 AlignTrailingComments: false
 AllowAllParametersOfDeclarationOnNextLine: false
 AllowShortBlocksOnASingleLine: false
@@ -30,7 +30,7 @@ BraceWrapping:
   BeforeElse:      false
   IndentBraces:    false
 BreakBeforeBinaryOperators: None
-BreakBeforeBraces: Attach
+BreakBeforeBraces: Linux
 BreakBeforeTernaryOperators: true
 BreakConstructorInitializersBeforeComma: false
 BreakAfterJavaFieldAnnotations: false
@@ -58,7 +58,7 @@ IndentWrappedFunctionNames: false
 KeepEmptyLinesAtTheStartOfBlocks: false
 MacroBlockBegin: ''
 MacroBlockEnd:   ''
-MaxEmptyLinesToKeep: 1
+MaxEmptyLinesToKeep: 2
 NamespaceIndentation: None
 ObjCBlockIndentWidth: 2
 ObjCSpaceAfterProperty: false

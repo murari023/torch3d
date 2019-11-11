@@ -1,6 +1,8 @@
 #include "cuda.h"
 
+
 constexpr int num_threads = 256;
+
 
 template <typename T>
 __global__ void gather_points_kernel(
@@ -10,7 +12,8 @@ __global__ void gather_points_kernel(
     int n,
     int m,
     int channels,
-    T* __restrict__ output) {
+    T* __restrict__ output)
+{
     int b = blockIdx.x;
 
     points += b * n * channels;
@@ -24,7 +27,9 @@ __global__ void gather_points_kernel(
     }
 }
 
-at::Tensor gather_points_cuda(const at::Tensor& points, const at::Tensor& index) {
+
+at::Tensor gather_points_cuda(const at::Tensor& points, const at::Tensor& index)
+{
     int batch_size = points.size(0);
     int n = points.size(1);
     int m = index.size(1);
@@ -48,6 +53,7 @@ at::Tensor gather_points_cuda(const at::Tensor& points, const at::Tensor& index)
     return output;
 }
 
+
 template <typename T>
 __global__ void gather_points_grad_kernel(
     const T* __restrict__ grad,
@@ -56,7 +62,8 @@ __global__ void gather_points_grad_kernel(
     int n,
     int m,
     int channels,
-    T* __restrict__ output) {
+    T* __restrict__ output)
+{
     int b = blockIdx.x;
 
     grad += b * n * channels;
@@ -70,10 +77,12 @@ __global__ void gather_points_grad_kernel(
     }
 }
 
+
 at::Tensor gather_points_grad_cuda(
     const at::Tensor& grad,
     const at::Tensor& index,
-    int n) {
+    int n)
+{
     int batch_size = grad.size(0);
     int m = grad.size(1);
     int channels = grad.size(2);

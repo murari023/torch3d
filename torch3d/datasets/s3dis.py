@@ -92,12 +92,11 @@ class S3DIS(VisionDataset):
         with open(os.path.join(self.root, self.name, "room_filelist.txt")) as fp:
             rooms = [x.strip() for x in fp]
         area = "Area_" + str(self.test_area)
-        indices = [i for i, room in enumerate(rooms) if area in room]
+        index = [i for i, room in enumerate(rooms) if area in room]
         if self.train:
-            indices = list(set(range(len(rooms))) - set(indices))
-        self.data = self.data[indices]
-        self.targets = self.targets[indices]
-        self.targets = self.targets.astype(np.int64)
+            index = list(set(range(len(rooms))) - set(index))
+        self.data = self.data[index]
+        self.targets = self.targets[index].astype(np.int64)
 
     def __len__(self):
         return len(self.data)

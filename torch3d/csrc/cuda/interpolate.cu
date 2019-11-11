@@ -1,6 +1,8 @@
 #include "cuda.h"
 
+
 constexpr int num_threads = 256;
+
 
 template <typename T>
 __global__ void interpolate_kernel(
@@ -12,7 +14,8 @@ __global__ void interpolate_kernel(
     int m,
     int channels,
     int kernel_size,
-    T* __restrict__ output) {
+    T* __restrict__ output)
+{
     int b = blockIdx.x;
 
     input += b * channels * n;
@@ -33,10 +36,12 @@ __global__ void interpolate_kernel(
     }
 }
 
+
 at::Tensor interpolate_cuda(
     const at::Tensor& input,
     const at::Tensor& index,
-    const at::Tensor& weight) {
+    const at::Tensor& weight)
+{
     int batch_size = input.size(0);
     int channels = input.size(1);
     int n = input.size(2);
@@ -63,6 +68,7 @@ at::Tensor interpolate_cuda(
     return output;
 }
 
+
 template <typename T>
 __global__ void interpolate_grad_kernel(
     const T* __restrict__ grad,
@@ -73,7 +79,8 @@ __global__ void interpolate_grad_kernel(
     int m,
     int channels,
     int kernel_size,
-    T* __restrict__ output) {
+    T* __restrict__ output)
+{
     int b = blockIdx.x;
 
     grad += b * channels * m;
@@ -94,11 +101,13 @@ __global__ void interpolate_grad_kernel(
     }
 }
 
+
 at::Tensor interpolate_grad_cuda(
     const at::Tensor& grad,
     const at::Tensor& index,
     const at::Tensor& weight,
-    int n) {
+    int n)
+{
     int batch_size = grad.size(0);
     int channels = grad.size(1);
     int m = grad.size(2);

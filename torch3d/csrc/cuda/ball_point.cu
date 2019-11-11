@@ -1,6 +1,8 @@
 #include "cuda.h"
 
+
 constexpr int num_threads = 256;
+
 
 template <typename T>
 __global__ void ball_point_kernel(
@@ -12,7 +14,8 @@ __global__ void ball_point_kernel(
     int channels,
     float radius,
     int k,
-    int64_t* __restrict__ index) {
+    int64_t* __restrict__ index)
+{
     int b = blockIdx.x;
 
     points += b * num_points * channels;
@@ -45,11 +48,13 @@ __global__ void ball_point_kernel(
     }
 }
 
+
 at::Tensor ball_point_cuda(
     const at::Tensor& points,
     const at::Tensor& queries,
     float radius,
-    int k) {
+    int k)
+{
     int batch_size = points.size(0);
     int num_points = points.size(1);
     int num_queries = queries.size(1);

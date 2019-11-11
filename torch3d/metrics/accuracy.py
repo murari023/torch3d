@@ -17,10 +17,10 @@ class Accuracy(Metric):
         x = torch.argmax(x, dim=1).view(-1)
         y = y.view(-1)
         for k in range(self.num_classes):
-            indices = y == k
-            correct = torch.eq(x[indices], y[indices]).type(torch.float32)
+            index = y == k
+            correct = torch.eq(x[index], y[index]).type(torch.float32)
             self.count[k] += torch.sum(correct)
-            self.total[k] += torch.sum(indices)
+            self.total[k] += torch.sum(index)
 
     def score(self):
         value = torch.sum(self.count) / torch.sum(self.total)
