@@ -37,11 +37,17 @@ From source:
 ```bash
 git clone https://github.com/pqhieu/torch3d
 cd torch3d
-python setup.py install
+pip install --editable .
 ```
+
+**Note**: Some of the operations only support CUDA.
 
 Roadmap
 -------
+
+**0.3.0**
+- [ ] Improve documentation
+- [ ] More tutorials/examples
 
 **0.2.0**
 - [x] PointNet++ model
