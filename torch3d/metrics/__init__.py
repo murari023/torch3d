@@ -1,3 +1,3 @@
 from .metric import Metric
-from .accuracy import Accuracy
+from .accuracy import *
 from .jaccard import Jaccard

@@ -2,6 +2,37 @@ import torch
 from .metric import Metric
 
 
+__all__ = ["BinaryAccuracy", "Accuracy"]
+
+
+class BinaryAccuracy(Metric):
+    name = "accuracy"
+
+    def __init__(self, activation=torch.sigmoid):
+        self.activation = activation
+        self.reset()
+
+    def reset(self):
+        self.count = 0
+        self.total = 0
+
+    def update(self, output, target):
+        if self.activation is not None:
+            output = self.activation(output)
+        output = output.view(-1) >= 0.5
+        target = target.view(-1) >= 0.5
+        correct = torch.eq(output, target).type(torch.float32)
+        self.count += torch.sum(correct)
+        self.total += target.numel()
+
+    def score(self):
+        value = self.count / self.total
+        return value.item()
+
+    def mean(self):
+        return self.score()
+
+
 class Accuracy(Metric):
     name = "accuracy"
 

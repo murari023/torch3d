@@ -31,11 +31,11 @@ class PointNet(nn.Module):
             nn.Linear(1024, 512, bias=False),
             nn.BatchNorm1d(512),
             nn.ReLU(True),
-            nn.Dropout(0.2),
+            nn.Dropout(0.5),
             nn.Linear(512, 256, bias=False),
             nn.BatchNorm1d(256),
             nn.ReLU(True),
-            nn.Dropout(0.2),
+            nn.Dropout(0.5),
         )
         self.fc = nn.Linear(256, self.num_classes)
 
