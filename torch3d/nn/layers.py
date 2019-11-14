@@ -47,14 +47,17 @@ class XConv(nn.Module):
         batch_size = p.shape[0]
         _, index = F.knn(p, q, self.kernel_size * self.dilation)
         index = index[..., :: self.dilation]
-        p = F.gather_groups(p, index)
+        views = list(index.shape) + [-1]
+        p = F.batched_index_select(p, 1, index.view(batch_size, -1))
+        p = p.view(views)
         p_hat = p - q.unsqueeze(2)
         p_hat = p_hat.permute(0, 3, 1, 2)
         x_hat = self.mlp(p_hat)
         x_hat = x_hat.permute(0, 2, 3, 1)
         if x is not None:
             x = x.permute(0, 2, 1)
-            x = F.gather_groups(x, index)
+            x = F.batched_index_select(x, 1, index.view(batch_size, -1))
+            x = x.view(views)
             x_hat = torch.cat([x_hat, x], dim=-1)
         T = self.stn(p_hat)
         T = T.view(batch_size, self.kernel_size, self.kernel_size, -1)
@@ -85,17 +88,25 @@ class SetAbstraction(nn.Module):
         self.maxpool = nn.MaxPool2d([1, k])
 
     def forward(self, p, q, x=None):
-        if self.radius is not None:
+        batch_size = p.shape[0]
+        if self.radius is None:
+            x_hat = p.unsqueeze(1)
+            if x is not None:
+                x = x.permute(0, 2, 1)
+                x = x.unsqueeze(1)
+                x_hat = torch.cat([x_hat, x], dim=-1)
+        else:
             index = F.ball_point(p, q, self.radius, self.k)
-            p = F.gather_groups(p, index)
+            views = list(index.shape) + [-1]
+            p = F.batched_index_select(p, 1, index.view(batch_size, -1))
+            p = p.view(views)
             p_hat = p - q.unsqueeze(2)
             x_hat = p_hat
-        else:
-            x_hat = p.unsqueeze(1)
-        if x is not None:
-            x = x.permute(0, 2, 1)
-            x = F.gather_groups(x, index) if self.radius else x.unsqueeze(1)
-            x_hat = torch.cat([x_hat, x], dim=-1)
+            if x is not None:
+                x = x.permute(0, 2, 1)
+                x = F.batched_index_select(x, 1, index.view(batch_size, -1))
+                x = x.view(views)
+                x_hat = torch.cat([x_hat, x], dim=-1)
         x = x_hat.permute(0, 3, 1, 2)
         x = self.mlp(x)
         x = self.maxpool(x).squeeze(3)

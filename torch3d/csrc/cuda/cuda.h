@@ -9,11 +9,6 @@ at::Tensor ball_point_cuda(
     const at::Tensor& queries,
     float radius,
     int k);
-at::Tensor gather_points_cuda(const at::Tensor& points, const at::Tensor& index);
-at::Tensor gather_points_grad_cuda(
-    const at::Tensor& grad,
-    const at::Tensor& index,
-    int n);
 at::Tensor interpolate_cuda(
     const at::Tensor& input,
     const at::Tensor& index,

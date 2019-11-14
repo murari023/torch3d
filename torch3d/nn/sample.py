@@ -30,8 +30,6 @@ class FarthestPointSample(nn.Module):
     def forward(self, p, x=None):
         index = F.farthest_point_sample(p, self.num_samples)
         if x is not None:
-            x = x.permute(0, 2, 1)
-            x = F.gather_points(x, index)
-            x = x.permute(0, 2, 1)
-        p = F.gather_points(p, index)
+            x = F.batch_index_select(x, 2, index)
+        p = F.batched_index_select(p, 1, index)
         return p, x

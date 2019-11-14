@@ -48,38 +48,8 @@ def batched_index_select(input, dim, index):
     return torch.gather(input, dim, index)
 
 
-def gather_points(p, index):
-    return _GatherPoints.apply(p, index)
-
-
-def gather_groups(p, index):
-    batch_size = index.shape[0]
-    m = index.shape[1]
-    k = index.shape[2]
-    index = index.view(batch_size, -1)
-    output = _GatherPoints.apply(p, index)
-    output = output.view(batch_size, m, k, -1)
-    return output
-
-
 def interpolate(input, index, weight):
     return _Interpolate.apply(input, index, weight)
-
-
-class _GatherPoints(torch.autograd.Function):
-    @staticmethod
-    def forward(ctx, points, index):
-        n = points.shape[1]
-        ctx.for_backwards = (index, n)
-        _C = _lazy_import()
-        return _C.gather_points(points, index)
-
-    @staticmethod
-    def backward(ctx, grad):
-        index, n = ctx.for_backwards
-        _C = _lazy_import()
-        output = _C.gather_points_grad(grad, index, n)
-        return output, None
 
 
 class _Interpolate(torch.autograd.Function):
