@@ -39,6 +39,15 @@ def farthest_point_sample(p, num_samples):
     return _C.farthest_point_sample(p, num_samples)
 
 
+def batched_index_select(input, dim, index):
+    views = [input.shape[0]]
+    views += [1 if i != dim else -1 for i in range(1, len(input.shape))]
+    expanse = list(input.shape)
+    expanse[dim] = -1
+    index = index.view(views).expand(expanse)
+    return torch.gather(input, dim, index)
+
+
 def gather_points(p, index):
     return _GatherPoints.apply(p, index)
 
