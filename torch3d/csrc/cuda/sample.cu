@@ -125,27 +125,25 @@ __global__ void farthest_point_sample_kernel(
 }
 
 
-at::Tensor farthest_point_sample_cuda(const at::Tensor& points, int num_samples)
+at::Tensor farthest_point_sample_cuda(const at::Tensor& input, int m)
 {
-    int batch_size = points.size(0);
-    int num_points = points.size(1);
-    int channels = points.size(2);
-    at::Tensor index =
-        at::zeros({batch_size, num_samples}, points.options().dtype(at::kLong));
-    at::Tensor sqdists =
-        at::zeros({batch_size, num_points}, points.options()).fill_(1e10);
+    int batch_size = input.size(0);
+    int n = input.size(1);
+    int channels = input.size(2);
+    at::Tensor index = at::zeros({batch_size, m}, input.options().dtype(at::kLong));
+    at::Tensor sqdist = at::zeros({batch_size, m}, input.options()).fill_(1e10);
 
-    AT_DISPATCH_FLOATING_TYPES(points.type(), "farthest_point_sample_cuda", [&] {
+    AT_DISPATCH_FLOATING_TYPES(input.type(), "farthest_point_sample_cuda", [&] {
         dim3 block(num_threads);
         dim3 grid(batch_size);
         cudaStream_t stream = at::cuda::getCurrentCUDAStream();
         farthest_point_sample_kernel<scalar_t><<<grid, block, 0, stream>>>(
-            points.contiguous().data<scalar_t>(),
+            input.contiguous().data<scalar_t>(),
             batch_size,
-            num_points,
-            num_samples,
+            n,
+            m,
             channels,
-            sqdists.data<scalar_t>(),
+            sqdist.data<scalar_t>(),
             index.data<int64_t>());
     });
 

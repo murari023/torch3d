@@ -5,7 +5,7 @@ constexpr int num_threads = 256;
 
 
 template <typename T>
-__global__ void interpolate_kernel(
+__global__ void point_interpolate_kernel(
     const T* __restrict__ input,
     const int64_t* __restrict__ index,
     const T* __restrict__ weight,
@@ -37,7 +37,7 @@ __global__ void interpolate_kernel(
 }
 
 
-at::Tensor interpolate_cuda(
+at::Tensor point_interpolate_cuda(
     const at::Tensor& input,
     const at::Tensor& index,
     const at::Tensor& weight)
@@ -49,11 +49,11 @@ at::Tensor interpolate_cuda(
     int kernel_size = index.size(2);
     at::Tensor output = at::zeros({batch_size, channels, m}, input.options());
 
-    AT_DISPATCH_FLOATING_TYPES(input.type(), "interpolate_cuda", [&] {
+    AT_DISPATCH_FLOATING_TYPES(input.type(), "point_interpolate_cuda", [&] {
         dim3 block(num_threads);
         dim3 grid(batch_size);
         cudaStream_t stream = at::cuda::getCurrentCUDAStream();
-        interpolate_kernel<scalar_t><<<grid, block, 0, stream>>>(
+        point_interpolate_kernel<scalar_t><<<grid, block, 0, stream>>>(
             input.contiguous().data<scalar_t>(),
             index.contiguous().data<int64_t>(),
             weight.contiguous().data<scalar_t>(),
@@ -70,7 +70,7 @@ at::Tensor interpolate_cuda(
 
 
 template <typename T>
-__global__ void interpolate_grad_kernel(
+__global__ void point_interpolate_grad_kernel(
     const T* __restrict__ grad,
     const int64_t* __restrict__ index,
     const T* __restrict__ weight,
@@ -102,7 +102,7 @@ __global__ void interpolate_grad_kernel(
 }
 
 
-at::Tensor interpolate_grad_cuda(
+at::Tensor point_interpolate_grad_cuda(
     const at::Tensor& grad,
     const at::Tensor& index,
     const at::Tensor& weight,
@@ -114,11 +114,11 @@ at::Tensor interpolate_grad_cuda(
     int kernel_size = index.size(2);
     at::Tensor output = at::zeros({batch_size, channels, n}, grad.options());
 
-    AT_DISPATCH_FLOATING_TYPES(grad.type(), "interpolate_grad_cuda", [&] {
+    AT_DISPATCH_FLOATING_TYPES(grad.type(), "point_interpolate_grad_cuda", [&] {
         dim3 block(num_threads);
         dim3 grid(batch_size);
         cudaStream_t stream = at::cuda::getCurrentCUDAStream();
-        interpolate_grad_kernel<scalar_t><<<grid, block, 0, stream>>>(
+        point_interpolate_grad_kernel<scalar_t><<<grid, block, 0, stream>>>(
             grad.contiguous().data<scalar_t>(),
             index.contiguous().data<int64_t>(),
             weight.contiguous().data<scalar_t>(),
