@@ -133,7 +133,7 @@ class FeaturePropagation(nn.Module):
         sqdist[sqdist < 1e-10] = 1e-10
         weight = torch.reciprocal(sqdist)
         weight = weight / torch.sum(weight, dim=-1, keepdim=True)
-        x = F.interpolate(x, index, weight)
+        x = F.point_interpolate(x, index, weight)
         if y is not None:
             x = torch.cat([x, y], dim=1)
         x = self.mlp(x)
