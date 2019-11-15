@@ -6,11 +6,11 @@ constexpr int num_threads = 256;
 
 template <typename T>
 __global__ void ball_point_kernel(
-    const T* points,
-    const T* queries,
+    const T* input,
+    const T* query,
     int batch_size,
-    int num_points,
-    int num_queries,
+    int n,
+    int m,
     int channels,
     float radius,
     int k,
@@ -18,19 +18,19 @@ __global__ void ball_point_kernel(
 {
     int b = blockIdx.x;
 
-    points += b * num_points * channels;
-    queries += b * num_queries * channels;
-    index += b * num_queries * k;
+    input += b * n * channels;
+    query += b * m * channels;
+    index += b * m * k;
 
     int tid = threadIdx.x;
     float r2 = radius * radius;
 
-    for (int i = tid; tid < num_queries; tid += num_threads) {
+    for (int i = tid; tid < m; tid += num_threads) {
         int count = 0;
-        for (int j = 0; j < num_points; ++j) {
+        for (int j = 0; j < n; ++j) {
             T dist = 0;
             for (int c = 0; c < channels; ++c) {
-                T d = queries[i * channels + c] - points[j * channels + c];
+                T d = query[i * channels + c] - input[j * channels + c];
                 dist += d * d;
             }
 
@@ -50,28 +50,27 @@ __global__ void ball_point_kernel(
 
 
 at::Tensor ball_point_cuda(
-    const at::Tensor& points,
-    const at::Tensor& queries,
+    const at::Tensor& input,
+    const at::Tensor& query,
     float radius,
     int k)
 {
-    int batch_size = points.size(0);
-    int num_points = points.size(1);
-    int num_queries = queries.size(1);
-    int channels = points.size(2);
-    at::Tensor index =
-        at::zeros({batch_size, num_queries, k}, points.options().dtype(at::kLong));
+    int batch_size = input.size(0);
+    int n = input.size(1);
+    int m = query.size(1);
+    int channels = input.size(2);
+    at::Tensor index = at::zeros({batch_size, m, k}, input.options().dtype(at::kLong));
 
-    AT_DISPATCH_FLOATING_TYPES(points.type(), "ball_point_cuda", [&] {
+    AT_DISPATCH_FLOATING_TYPES(input.type(), "ball_point_cuda", [&] {
         dim3 block(num_threads);
         dim3 grid(batch_size);
         cudaStream_t stream = at::cuda::getCurrentCUDAStream();
         ball_point_kernel<scalar_t><<<grid, block, 0, stream>>>(
-            points.contiguous().data<scalar_t>(),
-            queries.contiguous().data<scalar_t>(),
+            input.contiguous().data<scalar_t>(),
+            query.contiguous().data<scalar_t>(),
             batch_size,
-            num_points,
-            num_queries,
+            n,
+            m,
             channels,
             radius,
             k,

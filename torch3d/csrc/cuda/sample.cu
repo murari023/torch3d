@@ -22,12 +22,12 @@ __device__ void __update(
 
 template <typename T>
 __global__ void farthest_point_sample_kernel(
-    const T* __restrict__ points,
+    const T* __restrict__ input,
     int batch_size,
-    int num_points,
-    int num_samples,
+    int n,
+    int m,
     int channels,
-    T* __restrict__ sqdists,
+    T* __restrict__ sqdist,
     int64_t* __restrict__ index)
 {
     __shared__ T sdist[num_threads];
@@ -35,9 +35,9 @@ __global__ void farthest_point_sample_kernel(
 
     int b = blockIdx.x;
 
-    points += b * num_points * channels;
-    sqdists += b * num_points;
-    index += b * num_samples;
+    input += b * n * channels;
+    sqdist += b * n;
+    index += b * m;
 
     int64_t prev = 0;
     int tid = threadIdx.x;
@@ -45,21 +45,21 @@ __global__ void farthest_point_sample_kernel(
         index[prev] = 0;
 
     __syncthreads();
-    for (int64_t i = 1; i < num_samples; ++i) {
+    for (int64_t i = 1; i < m; ++i) {
+        T maxval = 0;
         int argmax = 0;
-        T max_dist = 0;
-        for (int64_t k = tid; k < num_points; k += num_threads) {
+        for (int64_t k = tid; k < n; k += num_threads) {
             T dist = 0;
             for (int64_t c = 0; c < channels; ++c) {
-                T d = points[k * channels + c] - points[prev * channels + c];
+                T d = input[k * channels + c] - input[prev * channels + c];
                 dist += d * d;
             }
-            dist = min(dist, sqdists[k]);
-            sqdists[k] = dist;
-            argmax = dist > max_dist ? k : argmax;
-            max_dist = dist > max_dist ? dist : max_dist;
+            dist = min(dist, sqdist[k]);
+            sqdist[k] = dist;
+            argmax = dist > maxval ? k : argmax;
+            maxval = dist > maxval ? dist : maxval;
         }
-        sdist[tid] = max_dist;
+        sdist[tid] = maxval;
         sdist_i[tid] = argmax;
         __syncthreads();
 
@@ -131,7 +131,7 @@ at::Tensor farthest_point_sample_cuda(const at::Tensor& input, int m)
     int n = input.size(1);
     int channels = input.size(2);
     at::Tensor index = at::zeros({batch_size, m}, input.options().dtype(at::kLong));
-    at::Tensor sqdist = at::zeros({batch_size, m}, input.options()).fill_(1e10);
+    at::Tensor sqdist = at::zeros({batch_size, n}, input.options()).fill_(1e10);
 
     AT_DISPATCH_FLOATING_TYPES(input.type(), "farthest_point_sample_cuda", [&] {
         dim3 block(num_threads);

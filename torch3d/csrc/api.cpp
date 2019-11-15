@@ -2,10 +2,10 @@
 #include "cuda/cuda.h"
 
 
-at::Tensor farthest_point_sample(const at::Tensor& points, int num_samples)
+at::Tensor farthest_point_sample(const at::Tensor& input, int m)
 {
-    if (points.type().is_cuda()) {
-        return farthest_point_sample_cuda(points, num_samples);
+    if (input.type().is_cuda()) {
+        return farthest_point_sample_cuda(input, m);
     }
     AT_ERROR("Not compiled with GPU support");
 }
@@ -49,38 +49,10 @@ at::Tensor point_interpolate_grad(
 }
 
 
-std::vector<at::Tensor> chamfer_distance(
-    const at::Tensor& input,
-    const at::Tensor& target)
-{
-    if (input.type().is_cuda()) {
-        return chamfer_distance_cuda(input, target);
-    }
-    AT_ERROR("Not compiled with GPU support");
-}
-
-
-std::vector<at::Tensor> chamfer_distance_grad(
-    const at::Tensor& grad1,
-    const at::Tensor& grad2,
-    const at::Tensor& input,
-    const at::Tensor& target,
-    const at::Tensor& index1,
-    const at::Tensor& index2)
-{
-    if (grad1.type().is_cuda()) {
-        return chamfer_distance_grad_cuda(grad1, grad2, input, target, index1, index2);
-    }
-    AT_ERROR("Not compiled with GPU support");
-}
-
-
 PYBIND11_MODULE(TORCH_EXTENSION_NAME, m)
 {
     m.def("farthest_point_sample", &farthest_point_sample);
     m.def("ball_point", &ball_point);
     m.def("point_interpolate", &point_interpolate);
     m.def("point_interpolate_grad", &point_interpolate_grad);
-    m.def("chamfer_distance", &chamfer_distance);
-    m.def("chamfer_distance_grad", &chamfer_distance_grad);
 }

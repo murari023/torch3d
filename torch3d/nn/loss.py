@@ -10,5 +10,5 @@ class ChamferLoss(nn.Module):
     def __init__(self):
         super(ChamferLoss, self).__init__()
 
-    def forward(x, y):
-        return F.chamfer_loss(x, y)
+    def forward(input, target):
+        return F.chamfer_loss(input, target)

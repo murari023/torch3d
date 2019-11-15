@@ -111,6 +111,7 @@ class SetAbstraction(nn.Module):
         x = self.maxpool(x).squeeze(3)
         return q, x
 
+
 class FeaturePropagation(nn.Module):
     def __init__(self, in_channels, mlp, k=3, bias=True):
         super(FeaturePropagation, self).__init__()

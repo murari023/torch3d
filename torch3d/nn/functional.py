@@ -9,34 +9,34 @@ def cdist(x, y):
     return sqdist
 
 
-def knn(p, q, k):
-    sqdist = cdist(q, p)
+def knn(input, query, k):
+    sqdist = cdist(query, input)
     return torch.topk(sqdist, k, dim=-1, largest=False)
 
 
-def ball_point(p, q, radius, k):
+def ball_point(input, query, radius, k):
     _C = _lazy_import()
-    return _C.ball_point(p, q, radius, k)
+    return _C.ball_point(input, query, radius, k)
 
 
-def chamfer_loss(x, y):
-    sqdist = cdist(x, y)
+def chamfer_loss(input, target):
+    sqdist = cdist(input, target)
     return torch.mean(sqdist.min(1)[0]) + torch.mean(sqdist.min(2)[0])
 
 
-def random_point_sample(p, num_samples):
-    num_points = p.shape[1]
+def random_point_sample(input, num_samples):
+    num_points = input.shape[1]
     if num_samples > num_points:
         raise ValueError("num_samples should be less than input size.")
     return torch.randperm(num_points)[:num_samples]
 
 
-def farthest_point_sample(p, num_samples):
-    num_points = p.shape[1]
+def farthest_point_sample(input, num_samples):
+    num_points = input.shape[1]
     if num_samples > num_points:
         raise ValueError("num_samples should be less than input size.")
     _C = _lazy_import()
-    return _C.farthest_point_sample(p, num_samples)
+    return _C.farthest_point_sample(input, num_samples)
 
 
 def batched_index_select(input, dim, index):
@@ -46,6 +46,10 @@ def batched_index_select(input, dim, index):
     expanse[dim] = -1
     index = index.view(views).expand(expanse)
     return torch.gather(input, dim, index)
+
+
+def point_interpolate(input, index, weight):
+    return PointInterpolate.apply(input, index, weight)
 
 
 class PointInterpolate(torch.autograd.Function):
@@ -62,6 +66,3 @@ class PointInterpolate(torch.autograd.Function):
         _C = _lazy_import()
         output = _C.point_interpolate_grad(grad, index, weight, n)
         return output, None, None
-
-
-point_interpolate = PointInterpolate.apply
