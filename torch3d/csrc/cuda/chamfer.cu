@@ -140,8 +140,8 @@ __global__ void chamfer_distance_grad_kernel(
         atomicAdd(output1 + i * 3 + 1, g * (y1 - y2));
         atomicAdd(output1 + i * 3 + 2, g * (z1 - z2));
         atomicAdd(output2 + j * 3 + 0, g * (x2 - x1));
-        atomicAdd(output2 + j * 3 + 0, g * (y2 - y1));
-        atomicAdd(output2 + j * 3 + 0, g * (z2 - z1));
+        atomicAdd(output2 + j * 3 + 1, g * (y2 - y1));
+        atomicAdd(output2 + j * 3 + 2, g * (z2 - z1));
     }
 }
 

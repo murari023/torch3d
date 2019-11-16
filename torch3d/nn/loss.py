@@ -11,4 +11,5 @@ class ChamferLoss(nn.Module):
         super(ChamferLoss, self).__init__()
 
     def forward(input, target):
-        return F.chamfer_loss(input, target)
+        _, _, sqdist1, sqdist2 = F.chamfer_distance(input, target)
+        return torch.mean(sqdist1) + torch.mean(sqdist2)

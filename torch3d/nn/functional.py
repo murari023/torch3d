@@ -52,17 +52,38 @@ def point_interpolate(input, index, weight):
     return PointInterpolate.apply(input, index, weight)
 
 
+def chamfer_distance(input, target):
+    return ChamferDistance.apply(input, target)
+
+
 class PointInterpolate(torch.autograd.Function):
     @staticmethod
     def forward(ctx, input, index, weight):
-        n = input.shape[2]
-        ctx.for_backwards = (index, weight, n)
+        ctx.num_points = input.shape[2]
+        ctx.save_for_backward(index, weight)
         _C = _lazy_import()
         return _C.point_interpolate(input, index, weight)
 
     @staticmethod
     def backward(ctx, grad):
-        index, weight, n = ctx.for_backwards
+        num_points = ctx.num_points
+        index, weight = ctx.saved_tensors
         _C = _lazy_import()
-        output = _C.point_interpolate_grad(grad, index, weight, n)
+        output = _C.point_interpolate_grad(grad, index, weight, num_points)
         return output, None, None
+
+
+class ChamferDistance(torch.autograd.Function):
+    @staticmethod
+    def forward(ctx, input, target):
+        _C = _lazy_import()
+        index1, index2, sqdist1, sqdist2 = _C.chamfer_distance(input, target)
+        ctx.save_for_backward(input, target, index1, index2)
+        return index1, index2, sqdist1, sqdist2
+
+    def forward(ctx, grad1, grad2):
+        input, target, sqdist1, sqdist2 = ctx.saved_tensors
+        output1, output2 = _C.chamfer_distance_grad(
+            grad1, grad2, input, target, index1, index2
+        )
+        return output1, output2
