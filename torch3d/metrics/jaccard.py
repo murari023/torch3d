@@ -24,7 +24,8 @@ class Jaccard(Metric):
             self.union[k] += torch.sum(a | b)
 
     def score(self):
-        value = torch.mean(self.inter / self.union)
+        value = self.inter / self.union
+        value = torch.mean(value[torch.isfinite(value)])
         return value.item()
 
     def mean(self):

@@ -58,5 +58,6 @@ class Accuracy(Metric):
         return value.item()
 
     def mean(self):
-        value = torch.mean(self.count / self.total)
+        value = self.count / self.total
+        value = torch.mean(value[torch.isfinite(value)])
         return value.item()

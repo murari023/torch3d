@@ -13,7 +13,7 @@ class SceneNN(VisionDataset):
 
     name = "scenenn"
     url = "http://103.24.77.34:8080/scenenn/home/cvpr18/data/scenenn_seg_76.zip"
-    basedir = "scene_seg_76"
+    basedir = "scenenn_seg"
     splits = {
         "train": [
             "005",
